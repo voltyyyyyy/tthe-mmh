@@ -17,6 +17,8 @@ TTHE/
 ├── livecodebench/      # LiveCodeBench (competitive programming)
 ├── ds1000/             # DS-1000 (data-science coding)
 ├── swe/                # SWE-bench Verified (real-world software engineering; via mini-swe-agent)
+├── meta_memory/        # standalone Meta-Memory Harness: rules, patches, validation, promotion
+├── docs/papers/         # vendored research drafts and implementation notes
 ├── config.example.yaml # copy to config.yaml and fill in your endpoint
 ├── requirements.txt
 └── LICENSE             # MIT
@@ -32,6 +34,33 @@ execution feedback). All four domains share the same fixed-branch search, the sa
 > The agentic proposer/judge run through the **Claude Code CLI** wrapper in `text_to_sql/claude_wrapper.py`,
 > which every domain imports — so the `text_to_sql/` package must stay present even when running another
 > domain.
+
+## Meta-Memory Harness (MMH)
+
+`meta_memory/` implements the paper draft's two-tier rule memory before it is
+used by a benchmark: typed causal rules, individually attributable
+`ADD`/`DELETE`/`REFINE`/`SPLIT`/`MERGE` patches, SQLite persistence,
+precedent-weighted filtering, held-out validation, rollback, and evidence-gated
+promotion. The original draft is preserved at `docs/papers/mmh-draft.pdf`; the
+implementation decisions are in `docs/MMH_IMPLEMENTATION.md`.
+
+Run its credential-free labeled lifecycle demo and conformance checks from the
+repository root:
+
+```bash
+python -m meta_memory.demo
+python tests/test_meta_memory.py
+python tests/test_lcb_mmh_adapter.py
+```
+
+LiveCodeBench can enable MMH with `--memory-mode mmh`. It defaults to `none`
+and preserves the existing TTHE loop. MMH receives only public problems and
+public execution results; hidden tests remain measurement-only.
+
+```bash
+PYTHONPATH=. python -m livecodebench.lcb_optimize --pilot <pilot.json> \
+  --memory-mode mmh --batch-size 5 --group 2 --max-rounds 3
+```
 
 ## Install
 

@@ -17,11 +17,9 @@ import argparse
 import json
 import time
 import os
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 
-from . import lcb_bridge as bridge
-from . import lcb_proposer as P
-from .lcb_common import load_harness, PKG_DIR, AGENTS_DIR
 from audit_harness import audit_file
 
 _SOLVE_POOL = ThreadPoolExecutor(max_workers=32)
@@ -35,7 +33,7 @@ def safe_solve(h, timeout):
         return ""
 
 
-def _loadable(name, problem):
+def _loadable(name, problem, *, strict_audit=False):
     """Admissible only if it IMPORTS and passes the TTHE invariant audit.
 
     The audit existed but was never wired in: every domain's harness_base docstring claims
@@ -43,16 +41,19 @@ def _loadable(name, problem):
     the honour system. A violating candidate is rejected here, leaving its branch at its parent.
     (First run with this enabled on DS-1000 caught a real violation in the first batch.)"""
     try:
-        load_harness(name, problem)
-    except Exception:
-        return False
-    try:
         bad = [v for v in audit_file(AGENTS_DIR / f"{name}.py") if v["rule"] != "PARSE"]
-    except Exception:  # noqa: BLE001
-        return True                       # auditor failure must not reject a valid candidate
+    except Exception as exc:  # noqa: BLE001
+        if strict_audit:
+            print(f"   [audit] REJECTED {name}: auditor failed: {exc}", flush=True)
+            return False
+        bad = []                           # preserve legacy behavior outside MMH mode
     if bad:
         print(f"   [audit] REJECTED {name}: " +
               "; ".join(f"{v['rule']} line {v['line']}: {v['detail']}" for v in bad[:4]), flush=True)
+        return False
+    try:
+        load_harness(name, problem)
+    except Exception:
         return False
     return True
 
@@ -73,7 +74,21 @@ def main():
     ap.add_argument("--fresh", action="store_true")
     ap.add_argument("--initial-harness", default="bare",
                     help="seed harness the evolution starts from (e.g. react)")
+    ap.add_argument("--memory-mode", choices=("none", "mmh"), default="none",
+                    help="optional Meta-Memory Harness; default preserves ordinary TTHE")
+    ap.add_argument("--memory-state", default=None,
+                    help="public-only MMH lineage state JSON (default: this run's directory)")
+    ap.add_argument("--memory-db", default=None,
+                    help="SQLite MMH rule/patch store (default: alongside --memory-state)")
     args = ap.parse_args()
+
+    # Imports which initialise the solver client/config live below argparse so
+    # ``python -m livecodebench.lcb_optimize --help`` works on a fresh clone.
+    global bridge, P, load_harness, PKG_DIR, AGENTS_DIR
+    from . import lcb_bridge as bridge
+    from . import lcb_proposer as P
+    from .lcb_common import load_harness, PKG_DIR, AGENTS_DIR
+    from .mmh_adapter import MMHAdapter, PublicProblem
 
     if args.fresh:
         for f in AGENTS_DIR.glob("cand_*.py"):   # only clear generated candidates; keep seed harnesses
@@ -93,6 +108,14 @@ def main():
     # which is pointed at the batch's trace dir, would read a blend of two runs as if it were one.
     run_dir = PKG_DIR / "logs" / f"{args.run_name}_{time.strftime('%Y%m%d_%H%M%S')}"
     run_dir.mkdir(parents=True, exist_ok=True)
+    memory = None
+    if args.memory_mode == "mmh":
+        # The adapter owns only public candidate lineage; the core owns durable
+        # rules/patches.  Neither receives the raw LCB Problem object.
+        from meta_memory import MetaMemoryEngine, SQLiteStore
+        state_path = args.memory_state or run_dir / "mmh_adapter_state.json"
+        db_path = args.memory_db or str(Path(state_path).with_suffix(".sqlite"))
+        memory = MMHAdapter(state_path, engine=MetaMemoryEngine(SQLiteStore(db_path)))
     log = open(run_dir / "opt_log.jsonl", "w")
     print(f"\n######### TEST-TIME harness optimization — LiveCodeBench (agentic, public-test signal) #########")
     diffs = {}
@@ -152,6 +175,18 @@ def main():
             list(ex.map(one, list(enumerate(batch))))
         return codes
 
+    def public_evaluate(name, problem):
+        """Frozen-artifact evaluation for MMH validation; never calls hidden scoring."""
+        try:
+            h = load_harness(name, problem)
+            code = safe_solve(h, args.solve_timeout)
+            return bridge.run_code(code, problem.public_tests,
+                                   starter_code=getattr(problem, "starter_code", "")) if code else {
+                "n_pass": 0, "n_total": len(problem.public_tests), "results": []
+            }
+        except Exception:
+            return {"n_pass": 0, "n_total": len(problem.public_tests), "results": []}
+
     H = args.initial_harness
     if not (AGENTS_DIR / f"{H}.py").exists():
         raise ValueError(f"--initial-harness not found: agents/{H}.py")
@@ -164,24 +199,55 @@ def main():
         traced, cand_results = set(), {}
         branches = [H] * args.group
         print(f"\n===== BATCH {bi}/{len(batches)} ({len(batch)} q) — start from H={H} =====", flush=True)
+        if memory is not None:
+            # Pending patches are assessed on NEW tasks before that task's
+            # traces are available to another proposal round.  The callback
+            # is intentionally public-test-only and receives harness names,
+            # never an LCB Problem instance.
+            for p in batch:
+                public_problem = PublicProblem.from_problem(p)
+                outcomes = memory.validate_pending(
+                    public_problem, f"{bi}:public:{public_problem.qid}", lambda name, p=p: public_evaluate(name, p),
+                )
+                if outcomes:
+                    print(f"   [mmh] validated {len(outcomes)} frozen patch(es) on public Q={p.qid}", flush=True)
         # GENERATE phase: all branches share peer evidence, but each proposer edits only its assigned base.
         # A failed/unloadable child leaves that branch at its previous parent.
         for rnd in range(args.max_rounds):
             active = list(dict.fromkeys(branches))
             for c in active:
-                if c not in traced and _loadable(c, batch[0]):
+                if c not in traced and _loadable(c, batch[0], strict_audit=args.memory_mode == "mmh"):
                     cand_results[c] = observe(c, batch, trace_dir)
                     traced.add(c)
-            proposed = P.sample_branches(branches, trace_dir, run_dir, f"b{bi}r{rnd}", args.run_name,
-                                         batch, args.model, args.propose_timeout)
+            memory_context = []
+            if memory is not None:
+                memory_context = [
+                    {"qid": public.qid, "rules": memory.retrieve(public)}
+                    for public in (PublicProblem.from_problem(p) for p in batch)
+                ]
+            tag = f"b{bi}r{rnd}"
+            proposed = P.sample_branches(branches, trace_dir, run_dir, tag, args.run_name,
+                                         batch, args.model, args.propose_timeout,
+                                         memory_mode=memory is not None, memory_context=memory_context)
             next_branches, advanced = [], 0
-            for base, child in zip(branches, proposed):
-                accepted = child if child and _loadable(child, batch[0]) else base
+            for gi, (base, child) in enumerate(zip(branches, proposed)):
+                accepted = child if child and _loadable(child, batch[0], strict_audit=args.memory_mode == "mmh") else base
+                if memory is not None and accepted != base:
+                    card_path = P.proposal_card_path(run_dir, accepted)
+                    try:
+                        card = json.loads(card_path.read_text(encoding="utf-8"))
+                        memory.register_candidate(candidate=accepted, parent=base,
+                                                  source_path=AGENTS_DIR / f"{accepted}.py",
+                                                  proposal_card=card, batch=bi, generation_round=tag,
+                                                  origin_problem=PublicProblem.from_problem(batch[0]))
+                    except (OSError, ValueError, json.JSONDecodeError) as exc:
+                        print(f"   [mmh] REJECTED {accepted}: invalid memory artifact: {exc}", flush=True)
+                        accepted = base
                 next_branches.append(accepted)
                 advanced += accepted != base
             branches = next_branches
             for c in dict.fromkeys(branches):
-                if c not in traced and _loadable(c, batch[0]):
+                if c not in traced and _loadable(c, batch[0], strict_audit=args.memory_mode == "mmh"):
                     cand_results[c] = observe(c, batch, trace_dir)
                     traced.add(c)
             print(f"   batch{bi} gen-round{rnd}: {advanced}/{args.group} branches advanced", flush=True)
@@ -207,7 +273,12 @@ def main():
             tt_total += len(batch)
             tt_log.append({"batch": bi, "harness": H, "correct": bc, "total": len(batch)})
             print(f"   [test-time] batch{bi} H={H}: {bc}/{len(batch)} (hidden tests)", flush=True)
-        log.write(json.dumps({"batch": bi, "harness": H, "branches": branches, "candidates": final}) + "\n")
+        promotions = memory.finish_round(bi) if memory is not None else []
+        if promotions:
+            print(f"   [mmh] promoted {len(promotions)} rule(s)", flush=True)
+        log.write(json.dumps({"batch": bi, "harness": H, "branches": branches, "candidates": final,
+                              "memory": memory.summary() if memory is not None else None,
+                              "promotions": promotions}) + "\n")
         log.flush()
     log.close()
 
@@ -219,8 +290,11 @@ def main():
         ev_n = sum(1 for r in ev_results if r["difficulty"] == diff)
         print(f"    {diff:8} evolved {ev_d}/{ev_n}")
     json.dump({"tt_correct": tt_correct, "tt_total": tt_total, "final_harness": H,
-               "batches": tt_log, "per_problem": ev_results},
+               "batches": tt_log, "per_problem": ev_results,
+               "memory": memory.summary() if memory is not None else None},
               open(run_dir / "result.json", "w"), indent=2)
+    if memory is not None:
+        memory.close()
     print(f"[saved] {run_dir}/result.json   [traces] {run_dir}/traces/")
 
 

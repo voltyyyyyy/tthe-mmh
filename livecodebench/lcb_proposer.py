@@ -19,6 +19,23 @@ from .lcb_common import PKG, PKG_DIR, AGENTS_DIR, MH_ROOT
 PROPOSER_TOOLS = ["Read", "Glob", "Grep", "Write", "Edit", "Bash"]
 
 
+def proposal_card_path(run_dir, candidate):
+    """Location of the immutable, public-only lineage card for a candidate."""
+    return Path(run_dir) / "proposal_cards" / f"{candidate}.json"
+
+
+def valid_mmh_proposal_card(path, candidate, base_candidate, branch_id, generation_round,
+                            peer_candidates):
+    """Validate the MMH card without importing the memory package or LCB bridge."""
+    try:
+        from .mmh_adapter import valid_mmh_proposal_card as validate
+        card = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, ImportError):
+        return False
+    return validate(card, candidate=candidate, parent=base_candidate, branch_id=branch_id,
+                    generation_round=generation_round, peer_candidates=peer_candidates)
+
+
 def desc(res):
     if not res.get("ok"):
         return "ERROR: " + str(res.get("error", ""))[:120]
@@ -63,7 +80,13 @@ def propose_batch(tk):
     if not base_path.exists():
         raise FileNotFoundError(base_path)
     check_path = Path(run_dir) / f"check_{tag}_g{gi}.py"
+    mmh_mode = bool(tk.get("memory_mode"))
+    card_path = proposal_card_path(run_dir, new_name)
+    expected_peer_candidates = [candidate for candidate in candidates if candidate != base_candidate]
     cand_path.unlink(missing_ok=True)
+    if mmh_mode:
+        card_path.parent.mkdir(parents=True, exist_ok=True)
+        card_path.unlink(missing_ok=True)
     shutil.copyfile(base_path, cand_path)
     check_path.write_text(_check_script(new_name, tk["batch_json"]))
     cand_rows = []
@@ -71,6 +94,26 @@ def propose_batch(tk):
         relation = "ASSIGNED BASE" if c == base_candidate else "PEER EVIDENCE"
         cand_rows.append(f"  - `{c}` [{relation}]  (traces: {trace_dir}/{c}__q*.md ; code: {AGENTS_DIR}/{c}.py)")
     cand_list = "\n".join(cand_rows)
+    memory_section = ""
+    if mmh_mode:
+        memory_section = (
+            "\n\nMETA-MEMORY (PUBLIC-ONLY, ADVISORY): these retrieved rules were selected from earlier "
+            "public-test execution. They guide your ONE intervention but do not prove correctness. Do not put "
+            "them into the frozen coder prompt automatically; use them only to decide the harness edit.\n"
+            f"{json.dumps(tk.get('memory_context', []), indent=2)}\n\n"
+            "MMH ARTIFACT (mandatory): write a JSON proposal card to "
+            f"`{card_path}` with EXACTLY these fields: `candidate` (exactly `{new_name}`), `branch_id` "
+            f"(integer `{gi}`), `generation_round` (exactly `{tag}`), `base_candidate` (exactly "
+            f"`{base_candidate}`), `peer_candidates` (exactly {json.dumps(expected_peer_candidates)}), `role` "
+            "(string), `behavior_changes` (a list containing EXACTLY ONE object describing the single "
+            "intervention), `applied_rule` (object with `rule_id`, `instruction`, and optional `scope`), and "
+            "`memory_patch` (object with `operation` ADD|DELETE|REFINE|SPLIT|MERGE, `target_rule_ids` list, "
+            "`result_rules` list, `judge_confidence`, `rationale`, and optional general `context`). ADD has an empty target list; all other "
+            "operations name existing target rule IDs. DELETE has no result rules; ADD/REFINE/MERGE have one; "
+            "SPLIT has at least two. Every result rule has `phi`, `psi`, `omega`, and numeric `confidence`). The card "
+            "must describe only public traces and self-generated checks. Never include hidden/private/gold data "
+            "or scores. Do not make compound changes: they cannot be independently validated.\n"
+        )
     prompt = (
         f"You are evolving a GENERAL competitive-programming HARNESS: arbitrary Python wrapping a FROZEN weak "
         f"coder (deepseek-flash). There are {len(candidates)} candidate harnesses; each was run on a BATCH of "
@@ -107,11 +150,15 @@ def propose_batch(tk):
         f"VERIFY: edit `{cand_path}`, then run  PYTHONPATH={MH_ROOT} python {check_path}  (prints per-problem "
         f"public pass-counts + a SUMMARY); iterate to RAISE the count without breaking others. Leave the final "
         f"harness at EXACTLY `{cand_path}`."
+        + memory_section
         + (f"\n\nDIVERSITY (one of several parallel attempts): {tk.get('diversity','')}" if tk.get("diversity") else ""))
     claude_wrapper.run(prompt=prompt, model=tk["model"], allowed_tools=PROPOSER_TOOLS, cwd=str(MH_ROOT),
                        log_dir=str(Path(run_dir) / "claude_sessions"), name=f"{tag}g{gi}",
                        timeout_seconds=tk["timeout"], progress=False)
-    return cand_path.exists()
+    return cand_path.exists() and (
+        not mmh_mode or valid_mmh_proposal_card(card_path, new_name, base_candidate, gi, tag,
+                                                 expected_peer_candidates)
+    )
 
 
 # Three SEARCH STANCES (not technique recipes) — each branch explores the harness space from a different
@@ -135,6 +182,32 @@ DIVERSITY = [
 ]
 
 
+def _terminate_process_tree(process):
+    """Hard-stop an agent worker and descendants on both supported platforms."""
+    if process.poll() is not None:
+        return
+    if os.name == "nt":
+        # ``start_new_session`` does not give Windows a POSIX process group;
+        # taskkill /T is the equivalent tree termination required for a hung
+        # Claude subprocess and any children it launched.
+        try:
+            subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"], check=False,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=20)
+            return
+        except (OSError, subprocess.SubprocessError):
+            pass
+    else:
+        try:
+            os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+            return
+        except (ProcessLookupError, PermissionError, OSError):
+            pass
+    try:
+        process.kill()
+    except OSError:
+        pass
+
+
 def _spawn_and_wait(procs, timeout):
     hard = time.time() + timeout + 120
     for p in procs:
@@ -144,13 +217,11 @@ def _spawn_and_wait(procs, timeout):
             pass
     for p in procs:
         if p.poll() is None:
-            try:
-                os.killpg(os.getpgid(p.pid), signal.SIGKILL)
-            except (ProcessLookupError, PermissionError):
-                pass
+            _terminate_process_tree(p)
 
 
-def sample_branches(branches, trace_dir, run_dir, tag, run_name, batch, model, timeout):
+def sample_branches(branches, trace_dir, run_dir, tag, run_name, batch, model, timeout,
+                    memory_mode=False, memory_context=None):
     """Advance fixed proposer branches once.
 
     Every branch sees the same active candidate--trace pairs, while branch ``gi`` receives ``branches[gi]``
@@ -166,14 +237,24 @@ def sample_branches(branches, trace_dir, run_dir, tag, run_name, batch, model, t
         task = {"kind": "generate_batch", "candidates": active, "base_candidate": base_candidate,
                 "trace_dir": str(trace_dir), "batch_json": str(batch_json), "new_name": name,
                 "run_dir": str(run_dir), "tag": tag, "gi": gi, "model": model, "timeout": timeout,
-                "diversity": DIVERSITY[gi % len(DIVERSITY)]}
+                "diversity": DIVERSITY[gi % len(DIVERSITY)], "memory_mode": bool(memory_mode),
+                "memory_context": memory_context or []}
         tpath = Path(run_dir) / f"task_{tag}_g{gi}.json"
         tpath.write_text(json.dumps(task))
         procs.append(subprocess.Popen([sys.executable, "-u", "-m", f"{PKG}.lcb_proposer", "--worker", str(tpath)],
                                       cwd=str(MH_ROOT), start_new_session=True,
                                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL))
     _spawn_and_wait(procs, timeout)
-    return [name if (AGENTS_DIR / f"{name}.py").exists() else None for name in names]
+    return [
+        name if (
+            (AGENTS_DIR / f"{name}.py").exists()
+            and (not memory_mode or valid_mmh_proposal_card(
+                proposal_card_path(run_dir, name), name, branches[gi], gi, tag,
+                [candidate for candidate in active if candidate != branches[gi]],
+            ))
+        ) else None
+        for gi, name in enumerate(names)
+    ]
 
 
 def run_picker(tk):
