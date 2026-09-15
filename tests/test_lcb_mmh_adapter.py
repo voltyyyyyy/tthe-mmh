@@ -11,7 +11,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from livecodebench.mmh_adapter import MMHAdapter, PublicProblem, valid_mmh_proposal_card
-from meta_memory import MetaMemoryEngine, PatchStatus, Rule, RuleTier, SQLiteStore
+from meta_memory import MMHConfig, MetaMemoryEngine, PatchStatus, Rule, RuleTier, SQLiteStore
 
 
 def _problem(qid: str) -> PublicProblem:
@@ -139,6 +139,70 @@ def test_public_validation_records_stable_rule_outcome() -> None:
         assert len(history) == 1
         assert history[0]["success"] is False
         adapter.close()
+
+
+def test_stable_failure_history_can_reach_delete_gate_through_public_validation() -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        source = root / "candidate.py"
+        source.write_text("# frozen candidate artifact\n", encoding="utf-8")
+        engine = MetaMemoryEngine(
+            SQLiteStore(root / "memory.sqlite"),
+            config=MMHConfig(influence_threshold=0.0, context_match_confidence=0.0),
+        )
+        adapter = MMHAdapter(root / "lineage.json", engine=engine)
+        try:
+            stable = Rule(
+                "stable-rule", "find the sum of two integers", "old instruction",
+                tier=RuleTier.STABLE, status=PatchStatus.VALIDATED,
+            )
+            with engine.store.transaction():
+                engine.store.put_rule(stable)
+
+            def public_executor(name: str) -> dict:
+                passes = 0 if name == "candidate" else 1
+                return {
+                    "n_pass": passes,
+                    "n_total": 1,
+                    "results": [{"input": "1 2\n", "expected": "3\n", "stdout": "3\n", "ok": bool(passes)}],
+                }
+
+            for round_id in range(1, 6):
+                candidate = f"candidate-{round_id}"
+                proposal = _card(candidate, "parent")
+                proposal["applied_rule"] = {"rule_id": "stable-rule", "instruction": "old instruction"}
+                adapter.register_candidate(
+                    candidate=candidate, parent="parent", source_path=source,
+                    proposal_card=proposal, batch=round_id - 1,
+                    generation_round="b0r0", origin_problem=_problem(f"origin-{round_id}"),
+                )
+                adapter.validate_pending(
+                    _problem(f"future-{round_id}"),
+                    f"{round_id}:public:future-{round_id}",
+                    public_executor,
+                )
+
+            history = engine.store.get_rule("stable-rule").provenance.get("stable_failure_history", [])  # type: ignore[union-attr]
+            assert len(history) == 5
+            assert len({item["round_id"] for item in history}) == 5
+
+            retire_card = _card("retire", "parent")
+            retire_card["applied_rule"] = {"rule_id": "stable-rule", "instruction": "old instruction"}
+            retire_card["memory_patch"] = {
+                "operation": "DELETE",
+                "target_rule_ids": ["stable-rule"],
+                "result_rules": [],
+                "judge_confidence": 0.9,
+                "rationale": "five independent public failures",
+            }
+            association = adapter.register_candidate(
+                candidate="retire", parent="parent", source_path=source,
+                proposal_card=retire_card, batch=5, generation_round="b0r0",
+                origin_problem=_problem("retire-origin"),
+            )
+            assert association.patch_id == "lcb:retire"
+        finally:
+            adapter.close()
 
 
 if __name__ == "__main__":

@@ -18,6 +18,9 @@ runs/
 *.sqlite
 *.tiff
 
+# --- local agent skill installs (DSH project skill root; user-level copy lives in ~/.dsh) ---
+.dsh/
+
 # --- python ---
 __pycache__/
 *.pyc

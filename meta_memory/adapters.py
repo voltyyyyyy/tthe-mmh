@@ -319,43 +319,113 @@ class TokenOverlapMatcher:
 
 
 class PromptTemplates:
-    """Appendix-compatible prompt constructors for configured model adapters."""
+    """Appendix A prompt constructors for configured model adapters."""
 
     @staticmethod
     def diagnose_failure(*, user_query: str, expected_output: str, actual_output: str, rule: Mapping[str, Any] | None) -> str:
         rule = rule or {}
         return (
-            "You are a rigorous AI rule-maintenance expert. Return JSON only. "
-            "Choose ADD, DELETE, REFINE, SPLIT, or MERGE; stable rules may only MERGE or DELETE.\n"
-            f"Failure query: {user_query}\nExpected: {expected_output}\nActual: {actual_output}\n"
-            f"Matched rule: {json.dumps(dict(rule), sort_keys=True)}\n"
-            "Required keys: thinking, operation, target_rule_id, new_rule, split_details."
+            "You are a rigorous AI rule-maintenance expert. You maintain a \"volatile-tier\" rule base.\n"
+            "Every rule in memory strictly follows these five fields:\n"
+            "1. phi (applicability context): describes when this rule should be used.\n"
+            "2. psi (intervention instruction): the actual prompt/action to execute when the rule fires.\n"
+            "3. omega (execution feedback): the most recent validation result (success/fail/pending).\n"
+            "4. confidence: a float between 0 and 1 indicating the rule's trustworthiness.\n"
+            "5. lifespan: the number of validation rounds this rule has survived successfully.\n"
+            "IMPORTANT CONSTRAINTS:\n"
+            "- If the target rule resides in the \"stable tier\", you MUST NOT directly Refine it. "
+            "You may only output Merge (into a new rule) or suggest Deprecate.\n"
+            "- Your output must be strictly JSON-formatted for direct programmatic execution.\n\n"
+            "[Current failure case]\n"
+            f"- User query: {user_query}\n"
+            f"- Expected correct output: {expected_output}\n"
+            f"- Actual wrong output from the model: {actual_output}\n"
+            "[Existing matched rule (fill all fields with null if no rule matched)]\n"
+            f"- Rule ID: {rule.get('rule_id')}\n"
+            f"- phi (applicability context): {rule.get('phi')}\n"
+            f"- psi (intervention instruction): {rule.get('psi')}\n"
+            f"- omega (recent feedback): {rule.get('omega')}\n"
+            f"- confidence: {rule.get('confidence')}\n"
+            f"- lifespan (survived rounds): {rule.get('lifespan')}\n"
+            f"- Tier (stable or volatile): {rule.get('tier')}\n\n"
+            "Based on the failure above, decide how to modify the rule base. Output strictly in the "
+            "following JSON format (no extra text):\n"
+            "{\n"
+            "  \"thinking\": \"Brief reason why the old rule failed\",\n"
+            "  \"operation\": \"Refine / Split / Add / Delete / Merge\",\n"
+            "  \"target_rule_id\": \"ID of the rule to modify (use 'new' for Add)\",\n"
+            "  \"new_rule\": {\"phi\": ..., \"psi\": ..., \"omega\": \"pending\", "
+            "\"confidence\": 0.5, \"lifespan\": 0},\n"
+            "  \"split_details\": []\n"
+            "}"
         )
 
     @staticmethod
     def arbitrate(*, candidate_a: Mapping[str, Any], candidate_b: Mapping[str, Any], target_rule_id: str) -> str:
+        a = dict(candidate_a)
+        b = dict(candidate_b)
         return (
-            "You are a decision arbitrator. Return JSON only with decision "
-            "KEEP_A, KEEP_B, MERGE, or REJECT_BOTH and a reason.\n"
-            f"Target: {target_rule_id}\nA: {json.dumps(dict(candidate_a), sort_keys=True)}\n"
-            f"B: {json.dumps(dict(candidate_b), sort_keys=True)}"
+            "You are a decision arbitrator. Both candidate proposals follow the paper's rule structure "
+            "(phi, psi, omega, confidence, lifespan). Your goal is to keep the rule base concise and "
+            "consistent. Prefer the candidate with higher confidence and a more precise phi.\n\n"
+            f"A conflict has been detected on rule {target_rule_id}. Here are two conflicting patch "
+            "proposals (strictly matching the paper's storage format):\n"
+            "[Candidate A]\n"
+            f"- phi: {a.get('phi')}\n- psi: {a.get('psi')}\n- omega: {a.get('omega')}\n"
+            f"- confidence: {a.get('confidence')}\n- lifespan: {a.get('lifespan')}\n"
+            "[Candidate B]\n"
+            f"- phi: {b.get('phi')}\n- psi: {b.get('psi')}\n- omega: {b.get('omega')}\n"
+            f"- confidence: {b.get('confidence')}\n- lifespan: {b.get('lifespan')}\n\n"
+            "Output your arbitration result as JSON only:\n"
+            '{"decision":"KEEP_A / KEEP_B / MERGE / REJECT_BOTH","merged_phi":null,'
+            '"merged_psi":null,"merged_omega":null,"merged_confidence":null,'
+            '"merged_lifespan":null,"reason":"Short justification"}'
         )
 
     @staticmethod
     def route(*, phi: str, user_query: str) -> str:
         return (
-            "Return JSON only: is_match (boolean), confidence (0..1), reason. "
-            "Treat confidence below 0.7 as no match.\n"
-            f"Rule phi: {phi}\nQuery: {user_query}"
+            "You are a context matcher. Your sole task is to judge whether the current user query fully "
+            "matches the rule's \"phi\" (applicability context). Answer with a match boolean and a "
+            "confidence score. If confidence < 0.7, treat it as \"no match\".\n\n"
+            "[Rule phi (applicability context)]\n"
+            f"{phi}\n"
+            "[Current user query]\n"
+            f"{user_query}\n\n"
+            "Decide whether the query fully matches the above phi. Output only the following JSON:\n"
+            '{"is_match":true,"confidence":0.95,"reason":"One-sentence explanation"}'
         )
 
     @staticmethod
     def promotion_summary(*, rule: Mapping[str, Any]) -> str:
-        return "Write one objective plain-text promotion sentence of at most 20 words.\n" + json.dumps(dict(rule), sort_keys=True)
+        r = dict(rule)
+        return (
+            "You are a documentation writer. A rule has passed multiple validations and is about to be "
+            "promoted from the volatile (experimental) tier to the stable (core knowledge) tier. Write "
+            "one short, objective sentence summarising why it deserves promotion. Do not mention numeric "
+            "values; focus on qualitative stability and generalisation.\n\n"
+            "[Rule to be promoted]\n"
+            f"- Rule ID: {r.get('rule_id')}\n"
+            f"- phi (applicability): {r.get('phi')}\n"
+            f"- psi (instruction): {r.get('psi')}\n"
+            f"- omega (feedback record): {r.get('omega')}\n"
+            f"- confidence: {r.get('confidence')} (above threshold)\n"
+            f"- lifespan (survived rounds): {r.get('lifespan')} (above threshold)\n\n"
+            "Output a short promotion summary (<=20 words, plain text, no quotes)."
+        )
 
     @staticmethod
     def fallback_score(*, old_rule: Mapping[str, Any], proposed_rule: Mapping[str, Any]) -> str:
         return (
-            "Return only an integer 0 through 10 estimating whether this patch is reasonable.\n"
-            f"Old: {json.dumps(dict(old_rule), sort_keys=True)}\nNew: {json.dumps(dict(proposed_rule), sort_keys=True)}"
+            "You are an experienced evaluator. Although no statistical history is available, use common "
+            "sense to judge whether the proposed modification seems reasonable. Output only an integer "
+            "score from 0 to 10.\n\n"
+            "[Old rule]\n"
+            f"- phi (original applicability): {old_rule.get('phi')}\n"
+            f"- psi (original instruction): {old_rule.get('psi')}\n"
+            "[Proposed new rule]\n"
+            f"- phi (new applicability): {proposed_rule.get('phi')}\n"
+            f"- psi (new instruction): {proposed_rule.get('psi')}\n\n"
+            "Based on intuition, is this change an improvement or a degradation? Output only an integer "
+            "(0 = very poor, 10 = excellent):"
         )

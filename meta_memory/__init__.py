@@ -1,5 +1,6 @@
 """Provider-neutral implementation of the Meta-Memory Harness paper."""
 
+from .embeddings import EmbeddingConfig, EmbeddingEngine, EmbeddingError, build_embedding_engine
 from .engine import MetaMemoryEngine, deterministic_embedding
 from .store import SQLiteStore
 from .types import (
@@ -25,4 +26,8 @@ __all__ = [
     "SQLiteStore",
     "ValidationEvidence",
     "deterministic_embedding",
+    "EmbeddingConfig",
+    "EmbeddingEngine",
+    "EmbeddingError",
+    "build_embedding_engine",
 ]

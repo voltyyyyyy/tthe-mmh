@@ -112,10 +112,11 @@ def main():
     if args.memory_mode == "mmh":
         # The adapter owns only public candidate lineage; the core owns durable
         # rules/patches.  Neither receives the raw LCB Problem object.
-        from meta_memory import MetaMemoryEngine, SQLiteStore
+        from meta_memory import MetaMemoryEngine, SQLiteStore, build_embedding_engine
         state_path = args.memory_state or run_dir / "mmh_adapter_state.json"
         db_path = args.memory_db or str(Path(state_path).with_suffix(".sqlite"))
-        memory = MMHAdapter(state_path, engine=MetaMemoryEngine(SQLiteStore(db_path)))
+        memory = MMHAdapter(state_path, engine=MetaMemoryEngine(
+            SQLiteStore(db_path), embedding_provider=build_embedding_engine()))
     log = open(run_dir / "opt_log.jsonl", "w")
     print(f"\n######### TEST-TIME harness optimization — LiveCodeBench (agentic, public-test signal) #########")
     diffs = {}

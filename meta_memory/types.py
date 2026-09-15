@@ -120,7 +120,7 @@ class Patch:
     target_rule_ids: tuple[str, ...] = ()
     result_rules: tuple[Rule, ...] = ()
     context: str = ""
-    judge_confidence: float = 0.5
+    judge_confidence: float | None = None
     influence: float | None = None
     influence_source: str = "judge"
     status: PatchStatus = PatchStatus.DRAFT

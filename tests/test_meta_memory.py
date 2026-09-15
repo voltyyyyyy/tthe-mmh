@@ -6,6 +6,7 @@ import math
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
+from types import SimpleNamespace
 import sys
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -13,6 +14,9 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from meta_memory import (
+    EmbeddingConfig,
+    EmbeddingEngine,
+    EmbeddingError,
     MMHConfig,
     MetaMemoryEngine,
     Patch,
@@ -391,6 +395,45 @@ def test_appendix_prompt_one_delete_and_merge_shapes() -> None:
         context="merged",
     )
     assert merge.target_rule_ids == ("rule-a", "rule-b")
+
+
+def test_hash_embedding_engine_is_deterministic_and_order_invariant() -> None:
+    engine = EmbeddingEngine(EmbeddingConfig(provider="hash"))
+    first = engine.embed("binary search tree")
+    second = engine("search binary tree")
+    assert first == second
+    assert math.isclose(sum(value * value for value in first), 1.0)
+
+
+def test_openai_embedding_engine_batches_caches_and_normalizes() -> None:
+    calls = []
+
+    class FakeEmbeddings:
+        def create(self, **kwargs):
+            calls.append(kwargs)
+            return SimpleNamespace(data=[
+                SimpleNamespace(index=index, embedding=[float(index + 1), 0.0, 0.0])
+                for index in range(len(kwargs["input"]))
+            ])
+
+    fake_client = SimpleNamespace(embeddings=FakeEmbeddings())
+    engine = EmbeddingEngine(
+        EmbeddingConfig(provider="openai", model="fake-embed", dimensions=3, batch_size=1),
+        client=fake_client,
+    )
+    vectors = engine.embed_batch(["alpha", "beta"])
+    assert len(calls) == 2
+    assert all(call["model"] == "fake-embed" for call in calls)
+    assert all(math.isclose(sum(value * value for value in vector), 1.0) for vector in vectors)
+
+    # Cached call must not hit the provider again.
+    assert engine.embed("alpha") == vectors[0]
+    assert len(calls) == 2
+
+
+def test_unknown_embedding_provider_fails_clearly() -> None:
+    with assert_raises(EmbeddingError, match="unknown embedding provider"):
+        EmbeddingEngine(EmbeddingConfig(provider="not-a-provider")).embed("text")
 
 
 if __name__ == "__main__":

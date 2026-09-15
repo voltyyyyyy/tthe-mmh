@@ -105,9 +105,10 @@ class MetaMemoryEngine:
         Appendix Prompt 1 reports confidence inside ``new_rule``; callers that
         omit a separate ``judge_confidence`` should still be gated on that value.
         """
-        values = [float(patch.judge_confidence)]
-        values.extend(float(rule.initial_confidence) for rule in patch.result_rules)
-        return max(values)
+        if patch.judge_confidence is not None:
+            return float(patch.judge_confidence)
+        values = [float(rule.initial_confidence) for rule in patch.result_rules]
+        return max(values) if values else 0.5
 
     @staticmethod
     def _distance(left: Sequence[float], right: Sequence[float]) -> float:
@@ -116,10 +117,16 @@ class MetaMemoryEngine:
         return math.sqrt(sum((a - b) ** 2 for a, b in zip(left, right)))
 
     def estimate_influence(self, patch: Patch) -> tuple[float, str]:
-        """Eq. 11, with the documented cold-start judge-confidence fallback."""
+        """Eq. 11, with the documented cold-start judge-confidence fallback.
+
+        The numerator and denominator sum over the full precedent log ``M_t``,
+        as Eq. 11 specifies.  The comparable-neighbour count is used only to
+        decide whether the statistical estimate is trustworthy enough to use.
+        """
         context_embedding = self.embedding(self._patch_context(patch))
+        precedents = self.store.list_precedents()
         comparable: list[tuple[Precedent, float]] = []
-        for precedent in self.store.list_precedents():
+        for precedent in precedents:
             distance = self._distance(context_embedding, precedent.context_embedding)
             if distance <= self.config.gaussian_bandwidth:
                 comparable.append((precedent, distance))
@@ -127,7 +134,10 @@ class MetaMemoryEngine:
             return self._fallback_confidence(patch), "judge"
         denominator = 0.0
         numerator = 0.0
-        for precedent, distance in comparable:
+        for precedent in precedents:
+            distance = self._distance(context_embedding, precedent.context_embedding)
+            if math.isinf(distance):
+                continue
             weight = math.exp(-(distance * distance) / (2 * self.config.gaussian_bandwidth ** 2))
             denominator += weight
             numerator += weight * float(precedent.outcome)
