@@ -158,7 +158,12 @@ def parse_patch_response(
     if operation_name != "DELETE":
         result_kwargs.append(_rule_kwargs(raw_new_rule, required=True) or {})
     elif raw_new_rule is not None:
-        raise ResponseValidationError("DELETE must use new_rule: null")
+        # Appendix Prompt 1 uses an object with null phi/psi for DELETE; accept
+        # that as well as the later literal ``new_rule: null`` shorthand.
+        if not isinstance(raw_new_rule, Mapping):
+            raise ResponseValidationError("DELETE new_rule must be null or an object")
+        if any(raw_new_rule.get(name) not in (None, "") for name in ("phi", "psi")):
+            raise ResponseValidationError("DELETE new_rule.phi/psi must be null")
 
     raw_split = payload.get("split_details", [])
     if operation_name == "SPLIT":
@@ -169,18 +174,42 @@ def parse_patch_response(
         raise ResponseValidationError("split_details is only allowed for SPLIT")
 
     if operation_name == "MERGE":
-        merge_with = _string(payload, "merge_with")
-        assert merge_with is not None
-        if merge_with == target:
-            raise ResponseValidationError("MERGE needs two distinct target rules")
-        targets = (target, merge_with)
+        extra_targets: list[str] = []
+        merge_with = payload.get("merge_with")
+        if isinstance(merge_with, str) and merge_with.strip():
+            extra_targets.append(merge_with.strip())
+        raw_targets = payload.get("target_rule_ids")
+        if isinstance(raw_targets, list):
+            extra_targets.extend(
+                item.strip() for item in raw_targets
+                if isinstance(item, str) and item.strip()
+            )
+        extra_targets = [item for item in dict.fromkeys(extra_targets) if item != target]
+        if not extra_targets:
+            raise ResponseValidationError("MERGE requires a second distinct target_rule_id")
+        targets = (target, extra_targets[0])
 
     mm = _types()
     rules = tuple(
         mm.Rule(rule_id=f"{patch_id}:result:{index}", **kwargs)
         for index, kwargs in enumerate(result_kwargs)
     )
-    raw_confidence = payload.get("judge_confidence", payload.get("confidence", 0.5))
+    if "judge_confidence" in payload:
+        raw_confidence = payload["judge_confidence"]
+    elif "confidence" in payload:
+        raw_confidence = payload["confidence"]
+    else:
+        confidence_candidates = [
+            kwargs.get("initial_confidence")
+            for kwargs in result_kwargs
+            if isinstance(kwargs.get("initial_confidence"), (int, float))
+            and not isinstance(kwargs.get("initial_confidence"), bool)
+        ]
+        if isinstance(raw_new_rule, Mapping):
+            value = raw_new_rule.get("confidence")
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                confidence_candidates.append(float(value))
+        raw_confidence = max(confidence_candidates) if confidence_candidates else 0.5
     judge_confidence = _unit_float(raw_confidence, "judge_confidence")
     patch_provenance = dict(provenance or {})
     patch_provenance.update({"thinking": payload.get("thinking", ""), "raw_operation": operation_name})

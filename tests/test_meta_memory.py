@@ -244,6 +244,155 @@ def test_original_failure_recovery_and_stable_tier_protection() -> None:
     assert engine.store.get_rule(stable.rule_id) is None
 
 
+def test_configured_eq5_prior_and_prompt_confidence_fallback() -> None:
+    engine = _engine(alpha=10, beta=1)
+    patch = _add_patch("prior-patch", "prior-rule", confidence=0.9)
+    engine.stage_patch(patch, 1)
+    engine.validate_patch(_evidence("prior-patch", True, "subset-a", 1))
+    rule = engine.store.get_rule("prior-rule")
+    assert rule is not None
+    assert math.isclose(rule.confidence, 11 / 12)
+
+    parsed = parse_patch_response(
+        {
+            "operation": "Add",
+            "target_rule_id": "new",
+            "new_rule": {
+                "phi": "identical labels and low confidence",
+                "psi": "retrieve counterexamples",
+                "omega": "pending",
+                "confidence": 0.9,
+                "lifespan": 0,
+            },
+            "split_details": [],
+        },
+        patch_id="prompt-fallback",
+        context="identical labels and low confidence",
+    )
+    assert parsed.judge_confidence == 0.9
+    assert [item.patch_id for item in _engine().filter_and_resolve([parsed])] == ["prompt-fallback"]
+
+
+def test_stable_filtering_requires_allowed_ops_and_new_merge_identity() -> None:
+    engine = _engine()
+    stable = Rule("stable-rule", "context", "instruction", tier=RuleTier.STABLE,
+                  status=PatchStatus.VALIDATED)
+    _put(engine, stable)
+    for round_id, subset in enumerate(("a", "b", "a", "b", "a"), start=1):
+        engine.record_rule_observation(stable.rule_id, False, subset, round_id)
+
+    forbidden = Patch("high-refine", PatchOperation.REFINE, (stable.rule_id,),
+                      (Rule("refined", "narrow", "new"),), "context", 0.99)
+    deletion = Patch("low-delete", PatchOperation.DELETE, (stable.rule_id,), (), "context", 0.90)
+    winners = engine.filter_and_resolve([forbidden, deletion])
+    assert [item.patch_id for item in winners] == ["low-delete"]
+    rejected = engine.store.get_patch("high-refine")
+    assert rejected is not None and rejected.status is PatchStatus.REJECTED
+
+    second = Rule("stable-two", "context", "instruction", tier=RuleTier.STABLE,
+                  status=PatchStatus.VALIDATED)
+    _put(engine, second)
+    for round_id, subset in enumerate(("a", "b", "a", "b", "a"), start=1):
+        engine.record_rule_observation(second.rule_id, False, subset, round_id)
+    same_id_merge = Patch(
+        "same-id-merge", PatchOperation.MERGE, (stable.rule_id, second.rule_id),
+        (Rule(stable.rule_id, "merged", "merged"),), "context", 0.95,
+    )
+    with assert_raises(ValueError, match="new result rule id"):
+        engine.stage_patch(same_id_merge, 6)
+
+
+def test_inapplicable_evidence_does_not_change_confidence_or_resolve() -> None:
+    engine = _engine()
+    patch = _add_patch("p", "r")
+    engine.stage_patch(patch, 1)
+    engine.validate_patch(_evidence("p", True, "subset-a", 1))
+    assert engine.store.get_rule("r").confidence == 2 / 3  # type: ignore[union-attr]
+
+    inapplicable = ValidationEvidence("p", False, "subset-b", 2, applicable=False)
+    engine.validate_patch(inapplicable)
+    rule = engine.store.get_rule("r")
+    assert rule is not None and rule.confidence == 2 / 3
+    assert rule.failures == 0
+
+    engine.validate_patch(inapplicable)
+    assert engine.store.get_patch("p").validation_count == 1  # type: ignore[union-attr]
+
+
+def test_stable_failure_gate_requires_distinct_rounds_and_rollback_preserves_history() -> None:
+    engine = _engine()
+    stable = Rule("stable", "context", "instruction", tier=RuleTier.STABLE,
+                  status=PatchStatus.VALIDATED)
+    _put(engine, stable)
+    for subset in ("a", "b", "c", "d", "e"):
+        engine.record_rule_observation(stable.rule_id, False, subset, round_id=1)
+    same_round_delete = Patch("delete-one-round", PatchOperation.DELETE, (stable.rule_id,), (), "context", 0.9)
+    with assert_raises(ValueError, match="repeated cross-subset"):
+        engine.stage_patch(same_round_delete, 2)
+
+    rollback_engine = _engine()
+    stable = Rule("stable", "context", "instruction", tier=RuleTier.STABLE,
+                  status=PatchStatus.VALIDATED)
+    _put(rollback_engine, stable)
+    for round_id, subset in enumerate(("a", "b", "a", "b", "a"), start=1):
+        rollback_engine.record_rule_observation(stable.rule_id, False, subset, round_id)
+    pending = Patch("pending-delete", PatchOperation.DELETE, (stable.rule_id,), (), "context", 0.9)
+    rollback_engine.stage_patch(pending, 6)
+    rollback_engine.record_rule_observation(stable.rule_id, True, "c", 6)
+    assert rollback_engine.store.get_rule(stable.rule_id).provenance.get("stable_failure_history", []) == []  # type: ignore[union-attr]
+    rollback_engine.validate_patch(_evidence("pending-delete", False, "heldout", 6))
+    assert rollback_engine.store.get_rule(stable.rule_id).provenance.get("stable_failure_history", []) == []  # type: ignore[union-attr]
+
+
+def test_eq11_uses_target_phi_for_refine_and_stable_promotion_needs_success_rounds() -> None:
+    engine = _engine()
+    target = Rule("target", "TARGET PHI", "old", tier=RuleTier.VOLATILE,
+                  status=PatchStatus.VALIDATED)
+    _put(engine, target)
+    patch = Patch("refine", PatchOperation.REFINE, ("target",),
+                  (Rule("refined", "NEW PHI", "new"),), "NEW PHI", 0.9)
+    assert engine._patch_context(patch) == "TARGET PHI"
+
+    wait_engine = _engine()
+    wait_patch = _add_patch("wait", "wait-rule")
+    wait_engine.update_cycle(
+        [wait_patch], 1,
+        [ValidationEvidence("wait", True, f"subset-{index}", 1) for index in range(5)],
+    )
+    result = wait_engine.update_cycle([], 4)
+    rule = wait_engine.store.get_rule("wait-rule")
+    assert rule is not None
+    assert rule.successful_lifespan == 1
+    assert not result["promoted"]
+
+
+def test_appendix_prompt_one_delete_and_merge_shapes() -> None:
+    deletion = parse_patch_response(
+        {
+            "operation": "Delete",
+            "target_rule_id": "rule-a",
+            "new_rule": {"phi": None, "psi": None, "omega": "pending", "confidence": 0.5, "lifespan": 0},
+            "split_details": [],
+        },
+        patch_id="delete-shape",
+        context="context",
+    )
+    assert deletion.operation is PatchOperation.DELETE
+
+    merge = parse_patch_response(
+        {
+            "operation": "Merge",
+            "target_rule_id": "rule-a",
+            "target_rule_ids": ["rule-b"],
+            "new_rule": {"phi": "merged", "psi": "merged", "omega": "pending", "confidence": 0.9, "lifespan": 0},
+            "split_details": [],
+        },
+        patch_id="merge-shape",
+        context="merged",
+    )
+    assert merge.target_rule_ids == ("rule-a", "rule-b")
+
+
 if __name__ == "__main__":
     # Kept executable with the Python standard library because this repository has
     # no test-framework dependency. Pytest can still collect the test_* functions.

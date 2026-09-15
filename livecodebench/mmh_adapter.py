@@ -178,6 +178,12 @@ def valid_mmh_proposal_card(card: Mapping[str, Any], *, candidate: str, parent: 
         confidence = result.get("confidence", 0.5)
         if isinstance(confidence, bool) or not isinstance(confidence, (int, float)) or not 0 <= confidence <= 1:
             return False
+    judge_confidence = patch.get("judge_confidence")
+    if judge_confidence is not None:
+        if (isinstance(judge_confidence, bool)
+                or not isinstance(judge_confidence, (int, float))
+                or not 0 <= float(judge_confidence) <= 1):
+            return False
     return (
         card.get("candidate") == candidate
         and card.get("base_candidate") == parent
@@ -190,8 +196,6 @@ def valid_mmh_proposal_card(card: Mapping[str, Any], *, candidate: str, parent: 
         and isinstance(applied, Mapping)
         and isinstance(applied.get("rule_id"), str)
         and isinstance(applied.get("instruction"), str)
-        and isinstance(patch.get("judge_confidence", 0.5), (int, float))
-        and 0 <= float(patch.get("judge_confidence", 0.5)) <= 1
         and isinstance(patch.get("rationale"), str)
     )
 
@@ -252,11 +256,20 @@ class MMHAdapter:
             )
             for index, item in enumerate(spec.get("result_rules", []))
         )
+        judge_confidence = spec.get("judge_confidence")
+        if judge_confidence is None:
+            result_confidences = [
+                float(item["confidence"])
+                for item in spec.get("result_rules", [])
+                if isinstance(item.get("confidence"), (int, float))
+                and not isinstance(item.get("confidence"), bool)
+            ]
+            judge_confidence = max(result_confidences) if result_confidences else 0.5
         return Patch(
             patch_id=patch_id, operation=PatchOperation(str(spec["operation"]).upper()),
             target_rule_ids=tuple(spec.get("target_rule_ids", [])), result_rules=rules,
             context=str(spec.get("context") or (rules[0].phi if rules else context)),
-            judge_confidence=float(spec.get("judge_confidence", 0.5)),
+            judge_confidence=float(judge_confidence),
             provenance={"candidate": association.candidate, "parent": association.parent,
                         "rationale": spec["rationale"], "applied_rule": association.proposal_card["applied_rule"]},
         )
@@ -287,6 +300,22 @@ class MMHAdapter:
         self._state["associations"].append(association.to_dict())
         self._write()
         return association
+
+    def _record_stable_observation(self, record: Mapping[str, Any], success: bool,
+                                   subset_id: str, round_id: int) -> None:
+        if self.engine is None:
+            return
+        applied = _card_rule(record.get("proposal_card", {})) or {}
+        rule_id = applied.get("rule_id")
+        if not isinstance(rule_id, str) or not rule_id:
+            return
+        rule = self.engine.store.get_rule(rule_id)
+        if rule is None or getattr(rule.tier, "value", rule.tier) != "stable":
+            return
+        try:
+            self.engine.record_rule_observation(rule_id, success, subset_id, round_id)
+        except (KeyError, ValueError):
+            return
 
     def validate_pending(self, problem: PublicProblem, subset_id: str,
                          evaluator: Callable[[str], Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -342,6 +371,7 @@ class MMHAdapter:
                 # The core receives precisely the public payload above; no raw
                 # LCB Problem and no hidden measurement value cross this call.
                 from meta_memory import PatchStatus, ValidationEvidence
+                self._record_stable_observation(record, improved, subset_id, round_id)
                 patch = self.engine.validate_patch(ValidationEvidence(
                     patch_id=record["patch_id"], success=improved, subset_id=subset_id, round_id=round_id,
                     original_failure_recovered=(parent.n_pass < parent.n_total and child.n_pass == child.n_total),

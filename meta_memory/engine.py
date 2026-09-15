@@ -20,6 +20,7 @@ from .types import (
     RuleTier,
     ValidationEvidence,
     coerce_patch,
+    utc_now,
 )
 
 EmbeddingProvider = Callable[[str], Sequence[float]]
@@ -63,16 +64,50 @@ class MetaMemoryEngine:
         norm = math.sqrt(sum(value * value for value in values))
         return [value / norm for value in values] if norm else values
 
+    def _rule_confidence(self, rule: Rule) -> float:
+        """Eq. 5 using the engine-wide prior unless a rule recorded its own."""
+        prior = rule.provenance.get("confidence_prior") if isinstance(rule.provenance, dict) else None
+        if isinstance(prior, Mapping):
+            return rule.posterior_confidence(
+                alpha=float(prior.get("alpha", self.config.alpha)),
+                beta=float(prior.get("beta", self.config.beta)),
+            )
+        return rule.posterior_confidence(alpha=self.config.alpha, beta=self.config.beta)
+
     def _patch_context(self, patch: Patch) -> str:
-        if patch.context:
-            return patch.context
+        """Eq. 11 context.
+
+        ADD uses the newly proposed context.  DELETE/REFINE/SPLIT/MERGE use the
+        target rule's ``phi`` where available, exactly as the paper specifies.
+        """
+        target_phi = ""
         if patch.target_rule_ids:
             target = self.store.get_rule(patch.target_rule_ids[0])
             if target:
-                return target.phi
+                target_phi = target.phi
+        if patch.operation is PatchOperation.ADD:
+            if patch.context:
+                return patch.context
+            if patch.result_rules:
+                return patch.result_rules[0].phi
+            return target_phi
+        if target_phi:
+            return target_phi
+        if patch.context:
+            return patch.context
         if patch.result_rules:
             return patch.result_rules[0].phi
         return ""
+
+    def _fallback_confidence(self, patch: Patch) -> float:
+        """Judge/precedent cold-start confidence.
+
+        Appendix Prompt 1 reports confidence inside ``new_rule``; callers that
+        omit a separate ``judge_confidence`` should still be gated on that value.
+        """
+        values = [float(patch.judge_confidence)]
+        values.extend(float(rule.initial_confidence) for rule in patch.result_rules)
+        return max(values)
 
     @staticmethod
     def _distance(left: Sequence[float], right: Sequence[float]) -> float:
@@ -89,7 +124,7 @@ class MetaMemoryEngine:
             if distance <= self.config.gaussian_bandwidth:
                 comparable.append((precedent, distance))
         if len(comparable) < self.config.minimum_comparable_precedents:
-            return patch.judge_confidence, "judge"
+            return self._fallback_confidence(patch), "judge"
         denominator = 0.0
         numerator = 0.0
         for precedent, distance in comparable:
@@ -97,15 +132,54 @@ class MetaMemoryEngine:
             denominator += weight
             numerator += weight * float(precedent.outcome)
         if denominator == 0.0:
-            return patch.judge_confidence, "judge"
+            return self._fallback_confidence(patch), "judge"
         return numerator / denominator, "precedent"
 
+    def _filter_rejection_reason(self, patch: Patch) -> str | None:
+        """Paper-level Stage 2 sanity checks before influence/conflict handling."""
+        if patch.target_rule_ids:
+            targets = [self.store.get_rule(rule_id) for rule_id in patch.target_rule_ids]
+            missing = [rule_id for rule_id, rule in zip(patch.target_rule_ids, targets) if rule is None]
+            if missing:
+                return f"references missing target rule(s): {sorted(missing)}"
+            target_rules = [rule for rule in targets if rule is not None]
+            stable_targets = [rule for rule in target_rules if rule.tier is RuleTier.STABLE]
+            if stable_targets:
+                if len(stable_targets) != len(target_rules):
+                    return "MERGE/DELETE patches may not mix stable and volatile targets"
+                if patch.operation not in (PatchOperation.DELETE, PatchOperation.MERGE):
+                    return "stable rules only permit MERGE or DELETE"
+                if not all(self._stable_edit_allowed(rule) for rule in stable_targets):
+                    return "stable rule lacks repeated cross-subset failure observations"
+
+        result_ids = [rule.rule_id for rule in patch.result_rules]
+        if len(result_ids) != len(set(result_ids)):
+            return "result rule ids must be unique within one patch"
+        for rule_id in result_ids:
+            existing = self.store.get_rule(rule_id)
+            if existing is not None and rule_id not in patch.target_rule_ids:
+                return f"result rule id already exists: {rule_id}"
+        if patch.target_rule_ids:
+            stable_ids = {
+                rule.rule_id for rule in (self.store.get_rule(rule_id) for rule_id in patch.target_rule_ids)
+                if rule is not None and rule.tier is RuleTier.STABLE
+            }
+            if patch.operation is PatchOperation.MERGE and set(result_ids) & stable_ids:
+                return "stable MERGE must use a new result rule id"
+        return None
+
     def filter_and_resolve(self, patches: Iterable[Patch | Mapping[str, Any]]) -> list[Patch]:
-        """Algorithm 1 stage 2: influence gate, then deterministic conflict handling."""
+        """Algorithm 1 stage 2: influence gate, stable filtering, then conflicts."""
         eligible: list[Patch] = []
         with self.store.transaction():
             for raw_patch in patches:
                 patch = coerce_patch(raw_patch)
+                rejection = self._filter_rejection_reason(patch)
+                if rejection:
+                    patch.status = PatchStatus.REJECTED
+                    patch.last_error = rejection
+                    self.store.put_patch(patch)
+                    continue
                 influence, source = self.estimate_influence(patch)
                 patch.influence, patch.influence_source = influence, source
                 if influence < self.config.influence_threshold:
@@ -115,19 +189,20 @@ class MetaMemoryEngine:
                 else:
                     eligible.append(patch)
 
-            # A no-target Add does not conflict with another Add.  All explicit target
-            # overlaps do.  Highest influence wins, then lexical patch id for replay.
+            # Patches compete for every rule identity they read or create.  Highest
+            # influence wins; ties use lexical patch id for deterministic replay.
             winners: list[Patch] = []
             claimed: set[str] = set()
             for patch in sorted(eligible, key=lambda item: (-float(item.influence or 0), item.patch_id)):
-                overlap = claimed.intersection(patch.target_rule_ids)
+                patch_ids = set(patch.target_rule_ids) | {rule.rule_id for rule in patch.result_rules}
+                overlap = claimed.intersection(patch_ids)
                 if overlap:
                     patch.status = PatchStatus.DEFERRED
                     patch.last_error = f"conflicts with higher-influence patch on {sorted(overlap)}"
                     self.store.put_patch(patch)
                     continue
                 winners.append(patch)
-                claimed.update(patch.target_rule_ids)
+                claimed.update(patch_ids)
         return sorted(winners, key=lambda item: item.patch_id)
 
     def record_rule_observation(
@@ -147,18 +222,25 @@ class MetaMemoryEngine:
             history.sort(key=lambda item: (item["round_id"], item["subset_id"]))
             if success:
                 history = []
-            rule.provenance["stable_failure_history"] = history[-self.config.stable_failure_rounds:]
-            rule.updated_at = rule.updated_at
+            rule.provenance["stable_failure_history"] = history[-self.config.stable_failure_rounds:] if self.config.stable_failure_rounds else []
+            rule.updated_at = utc_now()
             self.store.put_rule(rule)
             return rule
 
     def _stable_edit_allowed(self, rule: Rule) -> bool:
+        needed = int(self.config.stable_failure_rounds)
+        if needed <= 0:
+            return True
         history = list(rule.provenance.get("stable_failure_history", []))
-        needed = self.config.stable_failure_rounds
         if len(history) < needed or any(item.get("success") for item in history[-needed:]):
             return False
         recent = history[-needed:]
-        return len({item["subset_id"] for item in recent}) >= self.config.stable_failure_subsets
+        distinct_rounds = {item.get("round_id") for item in recent}
+        distinct_subsets = {item.get("subset_id") for item in recent}
+        return (
+            len(distinct_rounds) >= needed
+            and len(distinct_subsets) >= int(self.config.stable_failure_subsets)
+        )
 
     def _validate_patch_shape(self, patch: Patch) -> None:
         if patch.operation is PatchOperation.ADD and (patch.target_rule_ids or not patch.result_rules):
@@ -169,6 +251,8 @@ class MetaMemoryEngine:
             raise ValueError(f"{patch.operation.value} requires result rule(s)")
         if patch.operation is PatchOperation.REFINE and len(patch.target_rule_ids) != 1:
             raise ValueError("REFINE must target exactly one rule")
+        if patch.operation in (PatchOperation.ADD, PatchOperation.REFINE, PatchOperation.MERGE) and len(patch.result_rules) != 1:
+            raise ValueError(f"{patch.operation.value} requires exactly one result rule")
         if patch.operation is PatchOperation.SPLIT and len(patch.result_rules) < 2:
             raise ValueError("SPLIT requires at least two specialized result rules")
         if patch.operation is PatchOperation.MERGE and len(patch.target_rule_ids) < 2:
@@ -188,16 +272,22 @@ class MetaMemoryEngine:
             if any(rule is None for rule in targets):
                 raise KeyError(f"patch {patch.patch_id} references missing target")
             stable_targets = [rule for rule in targets if rule and rule.tier is RuleTier.STABLE]
+            result_ids = [rule.rule_id for rule in patch.result_rules]
+            if len(result_ids) != len(set(result_ids)):
+                raise ValueError("result rule ids must be unique within one patch")
             if stable_targets:
                 if len(stable_targets) != len(targets):
                     raise ValueError("MERGE/DELETE patches may not mix stable and volatile targets")
                 if patch.operation not in (PatchOperation.DELETE, PatchOperation.MERGE):
                     raise ValueError("stable rules only permit MERGE or DELETE")
                 if not all(self._stable_edit_allowed(rule) for rule in stable_targets):
-                    raise ValueError("stable rule lacks five consecutive cross-subset failure observations")
+                    raise ValueError("stable rule lacks repeated cross-subset failure observations")
+                if patch.operation is PatchOperation.MERGE and set(result_ids) & {rule.rule_id for rule in stable_targets}:
+                    raise ValueError("stable MERGE must use a new result rule id")
 
             patch.status = PatchStatus.PENDING
             patch.created_round = round_id
+            patch.provenance = dict(patch.provenance or {})
             patch.parent_rule_snapshots = {rule_id: (rule.to_dict() if rule else None) for rule_id, rule in zip(patch.target_rule_ids, targets)}
             changed: set[str] = set(patch.target_rule_ids)
             normalized_results: list[Rule] = []
@@ -217,9 +307,14 @@ class MetaMemoryEngine:
                     or patch.provenance.get("failure_case")
                 )
                 rule.embedding = rule.embedding or self.embedding(rule.phi)
+                rule.provenance = dict(rule.provenance or {})
+                rule.provenance["confidence_prior"] = {
+                    "alpha": float(self.config.alpha),
+                    "beta": float(self.config.beta),
+                }
                 if stable_targets and patch.operation is PatchOperation.MERGE:
-                    rule.provenance = dict(rule.provenance)
                     rule.provenance["replaces_stable_rule_ids"] = [item.rule_id for item in stable_targets]
+                rule.updated_at = utc_now()
                 normalized_results.append(rule)
                 changed.add(rule.rule_id)
             patch.result_rules = tuple(normalized_results)
@@ -228,15 +323,20 @@ class MetaMemoryEngine:
             # Stable originals remain untouched while a deletion is pending and while
             # a merge replacement earns promotion.  Volatile edits are genuinely staged,
             # with snapshots allowing exact restoration on a negative validation.
+            staged_rule_ids: set[str] = set()
             if not stable_targets:
                 for target in targets:
                     if target is not None:
                         self.store.delete_rule(target.rule_id)
+                        staged_rule_ids.add(target.rule_id)
                 for result in normalized_results:
                     self.store.put_rule(result)
+                    staged_rule_ids.add(result.rule_id)
             elif patch.operation is PatchOperation.MERGE:
                 for result in normalized_results:
                     self.store.put_rule(result)
+                    staged_rule_ids.add(result.rule_id)
+            patch.provenance["staged_rule_ids"] = sorted(staged_rule_ids)
             self.store.put_patch(patch)
             return patch
 
@@ -248,29 +348,38 @@ class MetaMemoryEngine:
         return ()
 
     def _apply_evidence(self, patch: Patch, evidence: ValidationEvidence) -> None:
+        if not evidence.applicable:
+            return
         for rule_id in self._rule_ids_receiving_evidence(patch):
             rule = self.store.get_rule(rule_id)
             if rule is None:
                 continue
             if evidence.success:
                 rule.successes += 1
-                rule.successful_lifespan += 1
+                successful_rounds = list(rule.provenance.get("successful_rounds", []))
+                if evidence.round_id not in successful_rounds:
+                    successful_rounds.append(evidence.round_id)
+                rule.provenance["successful_rounds"] = successful_rounds
+                rule.successful_lifespan = len(successful_rounds)
             else:
                 rule.failures += 1
-            if evidence.applicable:
-                rule.independent_subsets.add(evidence.subset_id)
+            rule.independent_subsets.add(evidence.subset_id)
             if evidence.original_failure_recovered is True:
                 rule.original_failure_recovered = True
+            rule.updated_at = utc_now()
             self.store.put_rule(rule)
 
     def _restore_snapshot(self, patch: Patch) -> None:
-        # Remove all state created/modified by this patch, then restore exactly the
-        # serialized parents.  Stable originals were never removed, so putting their
-        # snapshots is harmless and makes interrupted recovery deterministic.
-        for rule_id in patch.affected_rule_ids:
+        # Only undo rules that stage_patch actually touched.  Stable merge/delete
+        # targets remain live and must not be deleted/reverted by a failed patch.
+        if isinstance(patch.provenance, dict) and "staged_rule_ids" in patch.provenance:
+            staged = set(patch.provenance["staged_rule_ids"])
+        else:
+            staged = set(patch.affected_rule_ids)
+        for rule_id in staged:
             self.store.delete_rule(rule_id)
         for rule_id, data in patch.parent_rule_snapshots.items():
-            if data is not None:
+            if data is not None and rule_id in staged:
                 self.store.put_rule(Rule.from_dict(data))
 
     def validate_patch(
@@ -308,6 +417,10 @@ class MetaMemoryEngine:
             inserted = self.store.add_evidence(evidence)
             if not inserted:
                 return patch
+            if not evidence.applicable:
+                # Audit the observation but do not let an inapplicable context
+                # calibrate Eq. 5 or resolve a pending patch.
+                return patch
             patch.validation_count += 1
             self._apply_evidence(patch, evidence)
             if patch.status is PatchStatus.PENDING:
@@ -323,6 +436,7 @@ class MetaMemoryEngine:
                         rule = self.store.get_rule(rule_id)
                         if rule is not None:
                             rule.status = PatchStatus.VALIDATED
+                            rule.updated_at = utc_now()
                             self.store.put_rule(rule)
                 else:
                     self._restore_snapshot(patch)
@@ -351,6 +465,7 @@ class MetaMemoryEngine:
             delta = round_id - last_round
             for rule in self.store.list_rules(RuleTier.VOLATILE):
                 rule.elapsed_age += delta
+                rule.updated_at = utc_now()
                 self.store.put_rule(rule)
             self.store.set_metadata("last_round", round_id)
 
@@ -358,8 +473,9 @@ class MetaMemoryEngine:
         return (
             rule.tier is RuleTier.VOLATILE
             and rule.status is PatchStatus.VALIDATED
-            and rule.confidence >= self.config.promotion_confidence
+            and self._rule_confidence(rule) >= self.config.promotion_confidence
             and rule.elapsed_age >= self.config.promotion_age
+            and rule.successful_lifespan >= self.config.promotion_age
             and len(rule.independent_subsets) >= self.config.promotion_subsets
             and (not rule.original_failure_required or rule.original_failure_recovered)
         )
@@ -380,7 +496,7 @@ class MetaMemoryEngine:
                         self.store.delete_rule(target_rule_id)
                 rule.tier = RuleTier.STABLE
                 rule.status = PatchStatus.VALIDATED
-                rule.updated_at = rule.updated_at
+                rule.updated_at = utc_now()
                 self.store.put_rule(rule)
                 promoted.append(rule)
             self.store.set_metadata("last_promotion_round", round_id)

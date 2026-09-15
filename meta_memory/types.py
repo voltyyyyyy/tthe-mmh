@@ -66,10 +66,30 @@ class Rule:
     original_failure_recovered: bool = False
     source_patch_id: str | None = None
 
+    def posterior_confidence(self, alpha: float = 1.0, beta: float = 1.0) -> float:
+        """Eq. 5 for the supplied Beta(alpha, beta) prior."""
+        alpha = float(alpha)
+        beta = float(beta)
+        denominator = alpha + beta + self.successes + self.failures
+        if denominator <= 0:
+            return 0.5
+        return (alpha + self.successes) / denominator
+
     @property
     def confidence(self) -> float:
-        """Eq. 5, with the agreed weak Beta(1, 1) prior."""
-        return (1 + self.successes) / (2 + self.successes + self.failures)
+        """Eq. 5 using the Beta prior recorded for this rule.
+
+        Engine-staged rules carry their configured prior in
+        ``provenance['confidence_prior']``; manually inserted rules fall back to
+        the paper's weak Beta(1, 1) prior.
+        """
+        prior = self.provenance.get("confidence_prior") if isinstance(self.provenance, dict) else None
+        if isinstance(prior, Mapping):
+            return self.posterior_confidence(
+                alpha=prior.get("alpha", 1.0),
+                beta=prior.get("beta", 1.0),
+            )
+        return self.posterior_confidence()
 
     def to_dict(self) -> dict[str, Any]:
         value = asdict(self)
@@ -155,8 +175,8 @@ class Precedent:
 
 @dataclass(slots=True)
 class MMHConfig:
-    alpha: int = 1
-    beta: int = 1
+    alpha: float = 1.0
+    beta: float = 1.0
     influence_threshold: float = 0.6
     promotion_confidence: float = 0.8
     promotion_age: int = 3
