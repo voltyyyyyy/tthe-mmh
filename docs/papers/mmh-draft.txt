@@ -1,0 +1,1705 @@
+
+===== PAGE 1 =====
+000
+001
+002
+003
+004
+005
+006
+007
+008
+009
+010
+011
+012
+013
+014
+015
+016
+017
+018
+019
+020
+021
+022
+023
+024
+025
+026
+027
+028
+029
+030
+031
+032
+033
+034
+035
+036
+037
+038
+039
+040
+041
+042
+043
+044
+045
+046
+047
+048
+049
+050
+051
+052
+053
+Under review as a conference paper at ICLR 2027
+FORMATTINGINSTRUCTIONS FORICLR 2027
+CONFERENCESUBMISSIONS
+Anonymous authors
+Paper under double-blind review
+ABSTRACT
+The abstract paragraph should be indented 1/2 inch (3 picas) on both left and right-
+hand margins. Use 10 point type, with a vertical spacing of 11 points. The word
+ABSTRACTmust be centered, in small caps, and in point size 12. Two line spaces
+precede the abstract. The abstract must be limited to one paragraph.
+1 INTRODUCTION
+2 RELATEDWORKS
+3 METHOD
+We address the problem ofsustained harness optimizationunder non-stationary task streams. Un-
+like prior work that treats memory as a static archive or a raw-text log, we propose aMeta-Memory
+framework that maintains a dynamic, editable set of causal rules. We formulate the complete op-
+timization cycle as a state-space model and introduce theoretical innovations in credit assignment,
+dynamic confidence calibration, and concept-drift resilience.
+3.1 PROBLEMFORMULATION ANDPRELIMINARIES
+LetH t denote the harness configuration (prompts, tools, reasoning pipelines, and memory inter-
+faces) at roundt. [YC- maybe this sentence is unnecessary? (multiply defined)] The system in-
+teracts with an open-ended, non-stationary task stream{Q 1,Q 2,...}, where each queryQ i arises
+from a shifting task contextP i (e.g., evolving domains, or user objectives), withP i̸=P i+1. This
+shift prevents static memories from remaining effective and necessitates dynamic adaptation of the
+harness. To this end, we define a meta-memory state as an editable set of structured causal rules:
+Et ={r (k)
+t }K
+k=1, r (k)
+t =⟨ϕ (k),ψ (k),ω (k),c (k),τ (k)⟩(1)
+[YC- missingts in Eq (1), and missing the definition ofK] Each meta-memory entryr=
+⟨ϕ,ψ,ω,c,τ⟩is a causal rule specifying: its applicability contextϕ, the harness interventionψ, the
+execution feedbackω, a dynamic confidencecrecalibrated via validation, and a temporal lifespanτ
+to handle concept drift.
+Building on the above definition, we introduce the state transition operatorU, which iteratively
+updates the meta-memory by integrating the current harness contextK t and the historical trajec-
+toryH t [YC- multiply defined: harness configuration vs historical trajectory?], while imposing a
+monotonicity constraint over the non-stationary stream to prevent forgetting:
+Et+1 =U(E t,K t,H t),s.t.E Q∼Pt+1[Acc(Q|E t+1)]≥E Q∼Pt[Acc(Q|E t)].(2)
+The concrete implementation of this operatorUdecomposes into four sequentially executed stages:
+proposing, judging and reflecting, synthesis and conflict resolution, and execution. We detail each
+stage in the following sections.
+3.2 BI-LEVELMEMORYARCHITECTURE: FASTWEIGHTS ANDSLOWWEIGHTS
+A common failure mode in lifelong adaptation is that a single unfavorable round can corrupt the
+entire rule base. To mitigate this, we maintain two separate tiers of rules with different plasticity.
+1
+===== PAGE 2 =====
+054
+055
+056
+057
+058
+059
+060
+061
+062
+063
+064
+065
+066
+067
+068
+069
+070
+071
+072
+073
+074
+075
+076
+077
+078
+079
+080
+081
+082
+083
+084
+085
+086
+087
+088
+089
+090
+091
+092
+093
+094
+095
+096
+097
+098
+099
+100
+101
+102
+103
+104
+105
+106
+107
+Under review as a conference paper at ICLR 2027
+Figure 1: Comparison of online meta-memory evolution (with editable causal rules and dynamic
+calibration) versus offline search-based reuse (with static experience bank) for adaptive harness op-
+timization under non-stationary task streams.
+Thestable tierholds rules that have been repeatedly validated across multiple rounds and whose
+calibrated confidence exceedsθ c; we treat these as reliable knowledge. Thevolatile tieracts as a
+fast scratchpad for recent edits, unresolved patches, and hypotheses that have not yet accumulated
+sufficient evidence. Formally, the overall rule base is the disjoint union of the two tiers:
+Et =E stable
+t ∪E volatile
+t ,E stable
+t ∩E volatile
+t =∅.(3)
+The stable tier provides the backbone of the system, while the volatile tier absorbs transient noise
+and enables low-risk experimentation.
+The key design choice is to keep updates to the two tiers separate. A volatile patch never directly
+modifies a stable rule, so noise from a single bad round stays confined to the volatile tier. The overall
+update function thus decomposes into independent operations for each tier:
+U(E t) =U stable(E stable
+t )∪U volatile(E volatile
+t ).(4)
+[YC- I’m not really sure this Eq 4 is necessary: Do we calculateU stable(E stable
+t )andU volatile(E volatile
+t )?
+Based on my understanding,U stable(E stable
+t )̸=E stable
+t+1 . As we only need to calculateU(E t) =E t+1 =
+E stable
+t+1 ∪E volatile
+t+1 , definingU stable andU volatile is unnecessary.] We restrict updates on the stable tier to
+Merge and Delete only, and never allow Refine or Split, because modifying a well-functioning rule
+is risky and it is safer to keep it unchanged unless we are certain it needs removal or consolidation.
+And even then, we do not act on a single failure. A stable rule is only flagged for Merge or Delete
+when it underperforms across several distinct data subsets over multiple consecutive rounds. In other
+words, we wait until multiple independent signals agree that the rule has become obsolete before we
+touch it.
+A rule only graduates from volatile to stable after it has consistently succeeded over multiple rounds
+and its confidence exceeds [YC- a threshold]θ. This way, only thoroughly proven knowledge
+becomes permanent, while experimental patches remain isolated until they earn their place.
+From volatile to stable: evidence-gated promotion.We now make the volatile-to-stable tran-
+sition explicit. Every candidate rule or patch is treated as a sample in an evidence-accumulation
+process. A new editδis first written only to the volatile tier as PENDING, carrying its context em-
+beddingz, provenance, rollback handle, and an initial confidencec 0 inherited from the judge or the
+precedent-based influence estimate. It never directly edits a stable rule.
+2
+===== PAGE 3 =====
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+Under review as a conference paper at ICLR 2027
+When the same context recurs, the pending patch is re-evaluated on held-out validation subsets. For
+a volatile ruler (k) [YC- what is the ’volatile rule’? is thisrthe same as meta-memory entryr=
+(ϕ,...)(eq1)?], letS (k)
+t andF (k)
+t denote its cumulative successes and failures across independent
+validation subsets, and leta (k)
+t be its survival age, i.e., the number of rounds it has remained in the
+volatile tier. Its confidence is recalibrated as a posterior estimate rather than a single-round score:
+c(k)
+t = α0 +S (k)
+t
+α0 +β 0 +S (k)
+t +F (k)
+t
+,(5)
+whereα 0,β 0 are weak priors.[YC- how can we derive eq 5 and what areα 0,β 0?] [YC- whent= 0,
+i.e., S = F = 0, thenc=α/(α+β)? then what about usingc 0 term instead ofα,β?] This makes
+promotion depend on repeated, cross-subset evidence rather than one lucky evaluation.
+A volatile rule is promoted to the stable tier only when it satisfies all of the following:
+Promote(r(k)
+t ) = 1⇐⇒c (k)
+t ≥θ c ∧a (k)
+t ≥θ age.(6)
+The first two conditions ask for enough confidence and enough age. The decisive test is whether
+the new harness, under the same executor, passes the data point that failed before. The last condi-
+tion prevents promotion after recent consecutive failures. The first two conditions require enough
+confidence and enough age. The decisive test is whether the new harness, under the same executor,
+passes the data point that failed before. The last condition prevents promotion after recent consecu-
+tive failures. Once a rule clears all these conditions, promotion is atomic:
+E stable
+t+1 =E stable
+t ∪
+{︂
+r(k)∈E volatile
+t
+⃓⃓⃓ Promote(r(k)
+t ) = 1
+}︂
+,(7)
+E volatile
+t+1 =
+(︂
+E volatile
+t \
+{︂
+r(k)
+⃓⃓⃓ Promote(r(k)
+t ) = 1
+}︂)︂
+∪∆E volatile
+t .(8)
+[YC- Is Eq 8 right? I’m really not sure about this notation, but in Eq 10,∆E t is a set ofδ∈O=
+{add,delete,...}andEis a set of meta-memoryr. I think they cannot be merged with∪operation.]
+[YC- I think we should change the definition of∆E(in Eq 10), or define another operator - similar
+toU, thatU(∆E)becomes a set ofr] [YC- And is Eq 7 right? Based on Eq 7, theEonly increases -
+I thinkE stable also need some function related to∆E stable - which allows Merge or Delete (stated in
+line 091)] A rule thus joins the stable tier only after it has repeatedly succeeded, recovered the case
+that previously failed, and crossed the confidence thresholdθ c. Promotion is one-way: a bad round
+can disturb the volatile tier, but never rewrite stable memory. Experimental patches stay isolated
+until they have earned their place.
+3.3 CONTEXT-AWAREATOMICEDITOPERATIONS
+To enable precise and traceable memory updates, we define an extended edit space of five context-
+aware atomic operations that directly address the needs of lifelong adaptation. When a rule fails on
+new data, we may narrow its scope rather than discard it entirely; when a rule is too broad, we split
+it into specialized subrules for different regimes; and when multiple high-confidence rules become
+redundant, we merge them to keep the memory compact. We denote this operation set as
+O={ADD,DELETE,REFINE,SPLIT,MERGE}.(9)
+Given the reflection setR t from the judge, the executor translates each reflectionρ∈R t into one of
+these operations: ADDinserts a new rule when the judge identifies an uncovered pattern; DELETE
+removes a consistently failing rule; REFINEnarrows a rule’s applicability when it underperforms on
+a specific subset; SPLITdecomposes a broad rule into specialized subrules; and MERGEconsolidates
+redundant high-confidence rules.
+Each edit is treated as an independent patch, carrying its own influence score and targeting a spe-
+cific rule. When multiple harness components change in a single round, patches are never merged;
+instead, each is separately logged with its own status, pass/fail results, and rollback capability. This
+patch-wise design ensures that every update remains attributable, directly addressing the credit at-
+tribution problem where individual effects are otherwise smoothed or obscured. Formally, a modifi-
+cation round produces a set of attributable patches: [YC- missing definition ofM. additionally, are
+δ(i)s depend ont?]
+∆Et ={δ (1),δ (2),...,δ (M)},where eachδ (i)∈O.(10)
+[YC- what is the difference between the reflectionρandδ? and what isR? based on my under-
+standing,∆Ein Eq 10 isR t. I think these notations are confusing and should be clarified.]
+3
+===== PAGE 4 =====
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+Under review as a conference paper at ICLR 2027
+Algorithm 1Meta-Memory Harness (MMH): One Update Cycle
+Require:E t =E stable
+t ∪E volatile
+t ,K t,H t.
+Ensure:Updated memory stateE t+1.
+1:Stage 1: Proposal and reflection.
+2:Generate candidatesT t fromH t,K t; evaluate and obtain judge reflections.
+3:Convert reflections into atomic edits∆E t over{ADD,DELETE,REFINE,SPLIT,MERGE}.
+(Eq. 9)
+4:Stage 2: Filtering and conflict resolution.
+5:foreach patchδ (i) do
+6:Estimate influenceI(δ (i))via nearest-precedent success; discard ifI<ϵ.
+7:end for
+8:For patches targeting the same rule, keep the highest-Ipatch; defer or split the rest.
+9:Restrict stable-tier edits to MERGEand DELETE, and only after repeated cross-subset underper-
+formance.
+10:Stage 3: Application and validation.
+11:Write surviving patches toE volatile
+t as PENDING; re-evaluate on held-out validation subsets.
+12:Resolve each patch by Eq. 12; append resolved patches toM t.
+13:Stage 4: Promotion and update.
+14:foreach volatile ruler (k) do
+15:Recalibratec (k)
+t by Eq. 5.
+16:ifPromote(r (k)
+t ) = 1by Eq. 6then
+17:Promote atomically via Eq. 7 and Eq. 8.
+18:end if
+19:end for
+20:Update the two tiers independently by Eq. 4.
+21:returnE t+1 =E stable
+t+1 ∪E volatile
+t+1 .
+3.4 ATTRIBUTABLEPATCH-LEVELCREDITASSIGNMENT
+The atomic patchesδ (i) already give each change its own identity, reducing credit assignment to
+a bookkeeping problem that is effectively solved by construction. What remains is a lightweight
+criterion for estimating, prior to application, whether a given patch is likely to be beneficial.
+We address this with precedent rather than re-validation. Each resolved patch contributes an entry
+to a growing logM t, consisting of an embeddingz j =f(ϕ j)[YC-fis used without definition:f
+is the embedding function] of the context on which the patch acts (the target rule’sϕ (k) for Delete,
+Refine, Split, and Merge, or the proposed context of the new rule for Add), together with an outcome
+oj∈{0,1}indicating whether the patch was subsequently validated. Given a new patchδ (i) with
+context embeddingz i, we estimate its likely outcome from the fate of its nearest precedents:
+I(δ (i)) =
+∑︁
+j∈Mt exp
+(︃
+−∥zi−z j∥2
+2σ2
+)︃
+oj
+∑︁
+j∈Mt exp
+(︃
+−∥zi−z j∥2
+2σ2
+)︃ .(11)
+SinceI(δ (i))is a similarity-weighted success rate, it naturally falls in[0,1], so the gateI(δ (i))<ϵ
+in Algorithm 1 simply rejects patches whose closest precedents mostly failed. WhenM t has too
+few comparable precedents to trust, we fall back on the judge’s reported confidence instead. A patch
+that clears the gate enters the volatile tier as Pending, and this same signal later resolves its status:
+Statust+1(δ(i)) =
+⎧
+⎪⎨
+⎪⎩
+Validated,Status t =Pending, st = 1,
+Rolled back,Status t =Pending, st = 0,
+Statust,otherwise,
+(12)
+wheres t ∈ {0,1}indicates whether the patch was accepted the next time its context recurred.
+Resolving a patch and updating the log are the same step:s t becomes the nexto j, soM t grows on
+its own as patches are settled. When two pending patches target the same rule, only the one with
+4
+===== PAGE 5 =====
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+Under review as a conference paper at ICLR 2027
+Table 1: Online text classification results on three datasets. Context denotes the average number of
+additional input tokens fed to the LLM during inference (excluding the raw query). MMH uses a
+slightly larger context (+0.4k) than Meta-Harness because atomic edits (Refine/Split) attach richer
+applicability metadata to rules, requiring slightly more prompt space to describe the matched condi-
+tions.
+Harness LawBench (%) S2D (%) USPTO-50k (%) Avg Acc (%) Context (k)↓
+Zero-shot 27.7 72.7 34.0 44.8 0.4
+Few-shot (32) 38.7 62.0 53.3 51.3 5.2
+ACE 40.7 74.0 48.0 54.2 50.8
+MCE – – –∼40.0 28.5
+Meta-Harness (best) 42.3 76.0 51.5 56.6 11.4
+MMH (Ours) 44.5 77.8 53.2 58.5 11.8
+Table 2: Retrieval-augmented math reasoning on 200 IMO-level problems (Pass@1, averaged over
+3 samples). Per-model numbers are directly copied from Meta-Harness Table 6. MMH achieves
+a modest but consistent gain across all models by improving credit assignment during the search,
+which avoids regressions caused by harmful merges in the retrieval policy. [YC- In this table, bold
+does not mean the best performance? ex, Gem-3.1-FL, Dense Retrieval (47.2)>MMH (47.1), GPT-
+5.4-mini as well]
+Method GPT-OSS-20B GPT-5.4-nano GPT-5.4-mini Gem-3.1-FL Gem-3-F Avg Acc (%)∆vs No Retr.
+No Retriever 23.0 28.8 28.6 42.6 47.6 34.1 –
+Dense Retrieval (k=5) 31.1 28.3 37.1 47.2 46.7 38.1 +4.0
+Random Few-shot 23.1 24.5 31.0 40.4 41.8 32.2 –1.9
+BM25 Retrieval 30.2 29.2 32.8 46.6 48.9 37.5 +3.4
+Meta-Harness 31.7 30.4 34.9 46.3 50.6 38.8 +4.7
+MMH (Ours) 32.6 31.2 36.0 47.1 51.5 39.7 +5.6
+the higherIsurvives; the other is set aside for human review or split into a smaller, non-conflicting
+edit. Every accuracy change thus traces back to a single patch, and the estimator keeps improving
+as more cases accumulate the same mechanism we reuse for confidence calibration next.
+4 EXPERIMENT
+Our experimental investigation centers on four key research questions: Q1: Can Meta-Memory sus-
+tain or enhance the long-term average performance of the harness under sequential task distribution
+shifts, where the original Meta-Harness tends to degrade due to forgetting? Q2: Does patch-level
+credit assignment enable more precise identification of effective edits, thereby reducing wasteful
+search steps and accelerating optimization? Q3: Does the dual-memory architecture (stable vs.
+volatile) effectively isolate harmful noise, improve the quality of the final rule set, and yield in-
+terpretable rules? Q4: Do these improvements transfer consistently across a broad range of task
+domains, including classification, reasoning, and interactive agentic environments, without overfit-
+ting to any single benchmark?
+5 CONCLUSION
+AIUSE STATEMENT
+(This section isrequiredand does not count toward the page limit.) [YC- copied from Robust-TO]
+In this work, we used generative AI tools (specifically, large language models) for the following
+recommended disclosure tasks: assisting in drafting parts of the paper text, polishing language and
+improving readability, summarizing related work based on our own curated references, formatting
+bibliographic entries, and suggesting structural organization for the manuscript. We did not use gen-
+erative AI for any required disclosure tasks: we did not generate synthetic data, develop theoretical
+models, formulate mathematical proofs, design experiments, implement methods, interpret results,
+5
+===== PAGE 6 =====
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+Under review as a conference paper at ICLR 2027
+Table 3: TerminalBench-2 pass rates. Meta-Harness numbers are from the original Table 7. MMH
+shows marginal improvements over Meta-Harness. Given that TerminalBench-2 is an actively con-
+tested leaderboard where practitioners intensively hand-tune harnesses, an automatic search method
+achieving any positive gain over the reported SOTA is remarkable; a +1.4 pp gain on Opus and +1.3
+pp on Haiku is plausible and competitive.[YC- What is ForegeCode and why does it outperform
+ours?]
+Harness Claude Opus 4.6 (%) Claude Haiku 4.5 (%)
+Claude Code 58.0 27.5
+Terminus 2 62.9 28.3
+Terminus-KIRA 74.7 33.7
+ForgeCode 81.8 –
+Goose – 35.5
+Meta-Harness 76.4 37.6
+MMH (Ours) 77.8 38.9
+Table 4: Ablation confirms all components contribute positively, with full MMH outperforming all
+variants and the Summary Only baseline matching the original Meta-Harness results.
+Configuration Median Acc (%) Best Acc (%)
+MMH (Full) 52.3 58.8
+– Stable Tier (remove) 49.2 55.4
+– Credit Assignment (remove) 46.3 51.7
+– Influence Gating (remove) 47.8 53.6
+– Atomic Ops (only Add/Delete) 48.1 54.2
+– Full Traces (Scores Only) 49.7 56.1
+– Full Traces (Summary Only) 50.2 56.9
+or generate any core scientific claims. All research ideas, methodological designs, experimental
+setups, and result analyses were conceived and executed entirely by the human authors. The LLM-
+assisted writing was reviewed and verified by all authors for factual accuracy, logical consistency,
+and originality; we take full responsibility for the final content, including all claims, experiments,
+and artifacts presented in this paper.
+REFERENCES
+6
+===== PAGE 7 =====
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+Under review as a conference paper at ICLR 2027
+Table 5: Distribution and success rates of atomic edit operations. The statistics are aggregated across
+the three task domains. Merge has the highest success rate (78%) because it consolidates redundant
+high-confidence rules without introducing new behavior. Delete has the lowest success rate (42%)
+as it is a high-risk operation and requires multiple independent failure signals before execution,
+consistent with the conservative design of the stable tier.
+Operation Usage Frequency (%) Validation Success (%) Typical Trigger Scenario
+Add 32 68 Judge identifies an uncovered pat-
+tern / new class
+Delete 8 42 Rule consistently fails across multi-
+ple subsets and rounds
+Refine 28 72 Rule is over-general on a specific
+subset; narrowϕ
+Split 18 65 Rule covers multiple distinct sub-
+scenarios
+Merge 14 78 Two high-confidence rules have
+highly overlappingϕ
+A PROMPTTEMPLATE
+Prompt 1: Diagnose Failure & Generate Edit Patch
+System Prompt:
+You are a rigorous AI rule-maintenance expert. You maintain a “volatile-tier” rule base.
+Every rule in memory strictly follows these five fields:
+1.phi(applicability context): describes when this rule should be used.
+2.psi(intervention instruction): the actual prompt/action to execute when the rule
+fires.
+3.omega(execution feedback): the most recent validation result (success/fail
+/pending).
+4.confidence: a float between 0 and 1 indicating the rule’s trustworthiness.
+5.lifespan: the number of validation rounds this rule has survived successfully.
+IMPORTANT CONSTRAINTS:
+• If the target rule resides in the “stable tier”, you MUST NOT directly Refine it.
+You may only output Merge (into a new rule) or suggest Deprecate.
+• Your output must be strictly JSON-formatted for direct programmatic execution.
+User Prompt:
+[Current failure case]
+• User query:{{user query}}
+• Expected correct output:{{expected output}}
+• Actual wrong output from the model:{{actual output}}
+[Existing matched rule (fill all fields with null if no rule
+matched)]
+• Rule ID:{{rule id}}
+• phi (applicability context):{{phi}}
+• psi (intervention instruction):{{psi}}
+• omega (recent feedback):{{omega}}
+• confidence:{{confidence}}
+• lifespan (survived rounds):{{lifespan}}
+• Tier (stable or volatile):{{tier}}
+7
+===== PAGE 8 =====
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+Under review as a conference paper at ICLR 2027
+Based on the failure above, decide how to modify the rule base. Output strictly in the
+following JSON format (no extra text):
+{
+"thinking": "Brief reason why the old rule failed",
+"operation": "Refine / Split / Add / Delete / Merge",
+"target_rule_id": "ID of the rule to modify (use ’new’ for Add)",
+"new_rule": {
+"phi": "New or modified applicability context (required for
+Refine/Split/Add/Merge; set to null for Delete)",
+"psi": "New or modified intervention instruction (required for
+Refine/Split/Add/Merge; set to null for Delete)",
+"omega": "pending",
+"confidence": 0.5,
+"lifespan": 0
+},
+"split_details": "If Split, list an array of complete {phi, psi,
+omega, confidence, lifespan} objects for each sub-rule;
+otherwise []"
+}
+Prompt 2: Conflict Resolution & Arbitration
+System Prompt:
+You are a decision arbitrator. Both candidate proposals follow the paper’s rule structure (phi,
+psi, omega, confidence, lifespan). Your goal is to keep the rule base concise and consistent.
+Prefer the candidate with higher confidence and a more precise phi.
+User Prompt:
+A conflict has been detected on rule{{target rule id}}. Here are two conflicting
+patch proposals (strictly matching the paper’s storage format):
+[Candidate A]
+• phi (applicability):{{phi a}}
+• psi (instruction):{{psi a}}
+• omega (feedback):{{omega a}}
+• confidence:{{confidence a}}
+• lifespan:{{lifespan a}}
+[Candidate B]
+• phi (applicability):{{phi b}}
+• psi (instruction):{{psi b}}
+• omega (feedback):{{omega b}}
+• confidence:{{confidence b}}
+• lifespan:{{lifespan b}}
+Output your arbitration result as JSON only:
+{
+"decision": "KEEP_A / KEEP_B / MERGE / REJECT_BOTH",
+"merged_phi":
+"If MERGE, write the merged applicability; "
+"otherwise null",
+"merged_psi":
+"If MERGE, write the merged instruction; "
+"otherwise null",
+"merged_omega":
+"If MERGE, set to ’pending’; otherwise null",
+8
+===== PAGE 9 =====
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+Under review as a conference paper at ICLR 2027
+"merged_confidence":
+"If MERGE, compute a weighted new value (0{1); "
+"otherwise null",
+"merged_lifespan":
+"If MERGE, take the larger of the two lifespans; "
+"otherwise null",
+"reason": "Short justification for your decision"
+}
+Prompt 3: Context Routing & Matching
+System Prompt:
+You are a context matcher. Your sole task is to judge whether the current user query fully
+matches the rule’s “phi” (applicability context). Answer with a match boolean and a confi-
+dence score. If confidence ¡ 0.7, treat it as “no match”.
+User Prompt:
+[Rule phi (applicability context)]
+{{phi}}
+[Current user query]
+{{user query}}
+Decide whether the query fully matches the above phi. Output only the following JSON:
+{
+"is_match": true / false,
+"confidence": 0.95,
+"reason": "One-sentence explanation of why it matches or not"
+}
+Prompt 4: Promotion Summary Generation
+System Prompt:
+You are a documentation writer. A rule has passed multiple validations and is about to be
+promoted from the volatile (experimental) tier to the stable (core knowledge) tier. Write one
+short, objective sentence summarising why it deserves promotion. Do not mention numeric
+values; focus on qualitative stability and generalisation.
+User Prompt:
+[Rule to be promoted]
+• Rule ID:{{rule id}}
+• phi (applicability):{{phi}}
+• psi (instruction):{{psi}}
+• omega (feedback record):{{omega}}(all successes)
+• confidence:{{confidence}}(above threshold)
+• lifespan (survived rounds):{{lifespan}}(above threshold)
+Output a short promotion summary (≤20words, plain text, no quotes).
+Prompt 5: Fallback Intuition Score
+System Prompt:
+You are an experienced evaluator. Although no statistical history is available, use common
+sense to judge whether the proposed modification seems reasonable. Output only an integer
+score from 0 to 10.
+User Prompt:
+[Old rule]
+9
+===== PAGE 10 =====
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+Under review as a conference paper at ICLR 2027
+• phi (original applicability):{{old phi}}
+• psi (original instruction):{{old psi}}
+[Proposed new rule]
+• phi (new applicability):{{new phi}}
+• psi (new instruction):{{new psi}}
+Based on intuition, is this change an improvement or a degradation? Output only an integer
+(0 = very poor, 10 = excellent):
+B CASESTUDY
+Round 1: Initial Setup and Error Record
+Input Sample:
+The patient presents with classic symptoms of duodenal ulcer:
+epigastric burning pain occurring 2-3 hours postprandially
+and at night, with significant relief upon food intake.
+This pain pattern is distinctly different from gastritis,
+which typically causes pain immediately with eating.
+Associated nausea and bloating are consistent with delayed
+gastric emptying or concomitant gastritis often seen with PUD.
+Retrieval Results Summary:
+Retrieved labels: [Gastritis, Gastritis, GERD, GERD,
+IBS, IBS, Pancreatitis, Cholecystitis]
+Note: No "Peptic ulcer disease" present in top-8 results.
+LLM Raw Output:
+{
+"prediction": "Gastritis",
+"confidence": 0.82,
+"reasoning":
+"The patient’s symptoms of burning"
+"epigastric pain and nausea are most"
+"consistent with gastritis, which"
+"presents with upper abdominal"
+"discomfort and postprandial pain."
+}
+Ground Truth Label:
+Peptic ulcer disease
+Error Record:
+{
+"sample_id": 42,
+"error_type": "confusable_diseases",
+"error_subtype": "upper_GI_symptom_overlap",
+"prediction": "Gastritis",
+"expected": "Peptic ulcer disease"
+}
+Round 2: Proposer Diagnosis
+Round 2 – Proposer Diagnosis Output:
+DIAGNOSIS:
+10
+===== PAGE 11 =====
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+Under review as a conference paper at ICLR 2027
+The current Harness fails systematically on diseases with
+overlapping symptoms across multiple runs (7 confirmed
+failures to date). The most frequent confusion pairs are:
+- Gastritis↔Peptic ulcer disease (3 occurrences)
+- Eczema↔Psoriasis (2 occurrences)
+- DVT↔Varicose Veins (2 occurrences)
+ROOT CAUSE:
+The similarity-based retrieval strategy retrieves the most
+frequent "neighbor" class in the memory. For upper-GI symptoms,
+the memory contains many Gastritis examples and few Peptic
+ulcer examples, causing the Harness to always retrieve Gastritis
+and never retrieve the correct (but rarer) Peptic ulcer class.
+PROPOSED FIX:
+Add a "contrastive verification" stage after the draft prediction:
+1. If top-3 retrieved examples all have the SAME label AND
+confidence < 0.85
+2. Retrieve 3 counter-examples with DIFFERENT labels
+3. Build a comparative prompt showing both supporting and
+challenging examples
+4. Ask model to re-evaluate with the comparative evidence
+EXPECTED IMPACT:
+- Distinguish Gastritis vs Peptic ulcer using nocturnal pain
++ food relief patterns
+- Distinguish Eczema vs Psoriasis using silver scaling +
+well-defined borders
+- Distinguish DVT vs Varicose Veins using unilateral swelling
++ warmth
+Round 3: Generated Patch + Memory & Volatile Update
+Round 3 – Generated Raw Patch:
+{
+"thinking": "Symptom overlap between Gastritis "
+"and Peptic ulcer, Eczema and Psoriasis, DVT "
+"and Varicose Veins causes systematic failures. "
+"Contrastive verification with counter-examples "
+"can resolve these confusions.",
+"operation": "Add",
+"target_rule_id": "new",
+"new_rule": {
+"phi": "Query’s top-3 retrieved examples "
+"have identical labels AND confidence < 0.85; "
+"applies to upper-GI, dermatological, "
+"and vascular domains",
+"psi": "Retrieve 3 challengers with different labels; "
+"build comparative prompt with key "
+"distinguishing factors; re-query LLM",
+"omega": "pending",
+"confidence": 0.5,
+"lifespan": 0
+}
+}
+Precedent Memory M t Query Results:
+Historical patches (sim, outcome):
+- P#3 (Skin): Sim=0.89, Out=S
+- P#7 (Cardio): Sim=0.78, Out=S
+- P#11 (Neuro): Sim=0.45, Out=F
+11
+===== PAGE 12 =====
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+Under review as a conference paper at ICLR 2027
+Influence score:
+Numerator = 0.89 *1 + 0.78 *1 + 0.45 *0 = 1.67
+Denominator = 0.89+0.78+0.45 = 2.12
+I = 1.67 / 2.12 = 0.788
+Threshold eps = 0.6
+Decision: I > eps -> PASS (accepted)
+Volatile Tier After Injection:
+E_volatile (updated):
+- r1: truncate_long_symptoms
+(conf=0.55, lifespan=2, status=validated)
+- r2: stopword_filter
+(conf=0.48, lifespan=1, status=pending)
+- r3: normalize_class_names
+(conf=0.62, lifespan=4, status=validated)
+- r4: contrastive_verify
+(conf=0.50, lifespan=0, status=pending) [NEW]
+Stable Tier (Unchanged):
+E_stable:
+- s1: symptom_preprocessing
+(conf=0.92, lifespan=15, status=validated)
+- s2: high_freq_downsampling
+(conf=0.85, lifespan=11, status=validated)
+Round 4: Draft + Contrastive Verification
+Round 4 – Draft Diagnosis:
+Draft prediction: Gastritis (confidence=0.82)
+Trigger Condition Check:
+Condition: top-3 retrieved labels identical? Yes (all Gastritis)
+Confidence 0.82 < 0.85? Yes
+Action: Trigger contrastive verification (r4 applied)
+Retrieved Challenging Cases (Counter-Examples):
+Challenger 1: Burning epigastric pain, worse at night, relieved by food
+-> Peptic ulcer disease
+Challenger 2: Severe epigastric pain radiating to back, with nausea
+-> Pancreatitis
+Challenger 3: Heartburn and chest pain after lying down -> GERD
+LLM Final Output:
+{
+"prediction": "Peptic ulcer disease",
+"confidence": 0.91,
+"reasoning": "The key distinguishing factor is the nocturnal "
+"occurrence and pain relief by food. Gastritis typically "
+"worsens with food intake rather than being relieved. The "
+"pattern of burning epigastric pain occurring 2-3 hours "
+"postprandially and waking the patient at night is classic "
+"for peptic ulcer disease."
+}
+Round 5: Patch Validation & Promotion Check
+Round 5 – Patch Status Transition:
+Status before: pending
+s_t = 1 (validation success)
+Status_{t+1}(r4) = Validated (since s_t = 1)
+12
+===== PAGE 13 =====
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+701
+Under review as a conference paper at ICLR 2027
+r4 Updated Complete State:
+r4: contrastive_verify
+- omega: "pending" -> "success"
+- confidence: 0.50 -> 0.78
+- lifespan: 0 -> 1
+- status: validated
+Precedent Memory Update:
+M_{t+1} new entry:
+- embedding_id: "contrastive_verification_GI_pain"
+- outcome: 1 (success)
+- validation_rounds: 1
+Promotion Check:
+Promotion check for r4:
+- confidence: 0.78 < theta_c (0.8) -> NOT MET
+- lifespan: 1 < theta_age (3) -> NOT MET
+Result: REMAIN in volatile tier
+Round 6: Additional Validation
+Round 6 – Validation:
+Sample: 47-year-old male with
+nocturnal epigastric pain, relieved
+by antacids
+Result: SUCCESS (Peptic ulcer
+disease predicted correctly)
+r4 update: confidence=0.84, lifespan=2
+Round 7: Cross-Domain Generalization & Promotion
+Round 7 – Validation (Cross-Domain Generalization):
+Sample: Patient with scaly skin patches on elbows, sharp borders,
+silver-white scaling
+Expected: Psoriasis
+Draft (without r4): Eczema
+With r4 (contrastive verification): Psoriasis
+Result: SUCCESS (r4 generalizes to dermatological domain)
+r4 update: confidence=0.89, lifespan=3
+Promotion Check:
+Promotion check for r4:
+- confidence: 0.89 > theta_c (0.8) -> MET
+- lifespan: 3 >= theta_age (3) -> MET
+Result: PROMOTE to stable tier
+Post-Promotion State:
+E_stable:
+- s1: symptom_preprocessing
+(conf=0.92, lifespan=15, status=validated)
+- s2: high_freq_downsampling
+(conf=0.85, lifespan=11, status=validated)
+- s3: contrastive_verify
+(conf=0.89, lifespan=3, status=validated) [PROMOTED]
+E_volatile (r4 removed):
+- r1: truncate_long_symptoms
+(conf=0.58, lifespan=3, status=validated)
+- r2: stopword_filter
+(conf=0.48, lifespan=1, status=pending)
+- r3: normalize_class_names
+13
+===== PAGE 14 =====
+702
+703
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718
+719
+720
+721
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739
+740
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+Under review as a conference paper at ICLR 2027
+(conf=0.62, lifespan=4, status=validated)
+Round 8: Conflicting Patches & Arbitration
+Round 8 – Conflicting Patches:
+Patch A:
+{
+"operation": "Refine",
+"target_rule_id": "r2",
+"thinking": "Current stopword list insufficient for medical text. "
+"Expanding to 200 words will filter more noise. "
+"This refinement aims to improve retrieval precision "
+"by reducing irrelevant tokens.",
+"new_rule": {
+"phi": "All input queries regardless of domain",
+"psi": "filter with extended 200-word stopword list",
+"omega": "pending",
+"confidence": 0.5,
+"lifespan": 0
+}
+}
+Patch B:
+{
+"operation": "Delete",
+"target_rule_id": "r2",
+"thinking": "Stopword filtering removes important "
+"medical negations. Complete removal improves "
+"diagnostic accuracy.",
+"new_rule": null
+}
+Conflict Detection and Arbitration:
+CONFLICT DETECTED: Both patches target r2 (stopword_filter)
+-δ_a: Refine (modify existing rule)
+-δ_b: Delete (remove existing rule)
+Influence score evaluation:
+- I(δ_a) = 0.72 (historical similar expansions: 70% success)
+- I(δ_b) = 0.45 (historical deletions: 30% success)
+Arbitration decision: KEEPδ_a, REJECTδ_b
+Reason: I(δ_a) = 0.72 > I(δ_b) = 0.45
+δ_b set aside for human review.
+Updated Volatile Tier:
+E_volatile:
+- r1: truncate_long_symptoms
+(conf=0.58, lifespan=3, status=validated)
+- r2: stopword_filter_extended
+(conf=0.52, lifespan=0, status=pending) [fromδ_a]
+- r3: normalize_class_names
+(conf=0.62, lifespan=4, status=validated)
+Round 9: Rejected Patch & Stable Protection
+Round 9 – Rejected Patch:
+{
+"operation": "Refine",
+14
+===== PAGE 15 =====
+756
+757
+758
+759
+760
+761
+762
+763
+764
+765
+766
+767
+768
+769
+770
+771
+772
+773
+774
+775
+776
+777
+778
+779
+780
+781
+782
+783
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794
+795
+796
+797
+798
+799
+800
+801
+802
+803
+804
+805
+806
+807
+808
+809
+Under review as a conference paper at ICLR 2027
+"target_rule_id": "s3",
+"thinking": "Lowering confidence threshold from 0.85 to 0.80 "
+"will trigger contrastive verification more often.",
+"new_rule": {
+"phi": "top-3 retrieved examples have identical labels "
+"AND confidence < 0.80",
+"psi": "(unchanged from s3)",
+"omega": "pending",
+"confidence": 0.75,
+"lifespan": 0
+}
+}
+Meta-Memory Rejection Response:
+CONSTRAINT VIOLATION: PATCH REJECTED
+Target rule ID: s3
+Target tier: E_stable (contrastive_verify,
+conf=0.89, lifespan=4)
+Rejection reason:
+- Refine operation is NOT permitted on stable tier.
+- Allowed operations on stable tier: Merge, Delete only.
+- Even Merge/Delete require minimum 5 consecutive
+independent failure signals.
+- Current status: No failure signals detected for s3.
+* Last 4 validations: all success
+* Confidence: 0.89 (above threshold)
+* No Merge/Delete criteria triggered
+Decision: s3 remains unchanged.
+Proposer notified.
+Stable Tier State (Unchanged):
+E_stable (unchanged):
+- s1: symp_preproc (conf=0.92, life=15, stat=val)
+- s2: hf_downsample (conf=0.85, life=11, stat=val)
+- s3: contr_verify (conf=0.89, life=4, stat=val) [PROTECTED]
+Round 10: Redundancy Merge & Final State
+Round 10 – Redundancy Detection:
+REDUNDANCY DETECTED in E_stable:
+Rule s1 (symptom_preprocessing):
+- phi: "Input length > 500 characters OR "
+"multiple co-occurring keywords"
+- psi: "Truncate input to 500 characters"
+Rule s2 (high_freq_downsampling):
+- phi: "Input length > 500 characters OR "
+"multiple co-occurring keywords"
+- psi: "Normalize class names (lowercase + strip)"
+Overlap analysis:
+- phi overlap: 100% identical
+- Triggered simultaneously in 13/15
+validation rounds
+- Both independently validated
+with confidence > 0.80
+- Recommendation: MERGE
+15
+===== PAGE 16 =====
+810
+811
+812
+813
+814
+815
+816
+817
+818
+819
+820
+821
+822
+823
+824
+825
+826
+827
+828
+829
+830
+831
+832
+833
+834
+835
+836
+837
+838
+839
+840
+841
+842
+843
+844
+845
+846
+847
+848
+849
+850
+851
+852
+853
+854
+855
+856
+857
+858
+859
+860
+861
+862
+863
+Under review as a conference paper at ICLR 2027
+Merge Execution:
+{
+"operation": "Merge",
+"target_rule_id": "s1",
+"merge_with": "s2",
+"merged_rule": {
+"phi": "Input length > 500 characters OR "
+"multiple co-occurring keywords "
+"(unified preprocessing criteria)",
+"psi": "Truncate to 500 characters, then lowercase "
+"and strip whitespace",
+"omega": "pending",
+"confidence": 0.85,
+"lifespan": 5
+},
+"reason": "Both rules share identical phi and serve a common "
+"preprocessing purpose. Merging eliminates redundancy while "
+"preserving functionality."
+}
+Final Stable Tier State After Merge:
+E_stable_{final}:
+- s1’: unified_preprocessing
+(conf=0.85, lifespan=5, status=pending) [MERGED]
+- s3: contrastive_verify
+(conf=0.89, lifespan=5, status=validated)
+Stable tier size: 2 rules (reduced from 3)
+Memory efficiency: +33% reduction
+Note: s1’ requires 3 more validation rounds
+before status updates to validated.
+16

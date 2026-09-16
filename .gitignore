@@ -21,6 +21,10 @@ runs/
 # --- local agent skill installs (DSH project skill root; user-level copy lives in ~/.dsh) ---
 .dsh/
 
+# --- experiment run output (regenerated; keep only code) ---
+experiments/*/_demo_run/
+experiments/*/_runs/
+
 # --- python ---
 __pycache__/
 *.pyc
