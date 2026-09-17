@@ -1,0 +1,158 @@
+{
+  "round": 14,
+  "domain": "telecom",
+  "records": [
+    {
+      "task": "telecom_[service_issue]lock_sim_card_pin|overdue_bill_suspension[PERSONA:Easy]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 38.66159534454346,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r14-ccad9b3218c0/attempts/study_8d69fa96_33889dea781f48/e449dc15a1306570/traces",
+      "candidate": "study_8d69fa96_33889dea781f48",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]airplane_mode_on|user_abroad_roaming_enabled_off[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 46.41936993598938,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r14-ccad9b3218c0/attempts/study_8d69fa96_33889dea781f48/9e1a09b3593a1ec0/traces",
+      "candidate": "study_8d69fa96_33889dea781f48",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_both_permissions|unseat_sim_card|user_abroad_roaming_enabled_off[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 47.551971673965454,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r14-ccad9b3218c0/attempts/study_8d69fa96_33889dea781f48/1018734f524a9045/traces",
+      "candidate": "study_8d69fa96_33889dea781f48",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 49.78912019729614,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r14-ccad9b3218c0/attempts/study_8d69fa96_33889dea781f48/3ad3865fc0e43f3a/traces",
+      "candidate": "study_8d69fa96_33889dea781f48",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]bad_vpn|data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 38.24001908302307,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r14-ccad9b3218c0/attempts/study_8d69fa96_33889dea781f48/3278e8698b6b62fa/traces",
+      "candidate": "study_8d69fa96_33889dea781f48",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[service_issue]airplane_mode_on|break_apn_settings|contract_end_suspension|lock_sim_card_pin[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 36.959566593170166,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r14-ccad9b3218c0/attempts/study_8d69fa96_33889dea781f48/c2bc743edb764523/traces",
+      "candidate": "study_8d69fa96_33889dea781f48",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]break_app_both_permissions|data_usage_exceeded[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 35.58621573448181,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r14-ccad9b3218c0/attempts/study_8d69fa96_33889dea781f48/62889f7ee0ff20b0/traces",
+      "candidate": "study_8d69fa96_33889dea781f48",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 41.29153895378113,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r14-ccad9b3218c0/attempts/study_8d69fa96_33889dea781f48/1965e27069878e5f/traces",
+      "candidate": "study_8d69fa96_33889dea781f48",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_app_sms_permission|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_off[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 36.35975766181946,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r14-ccad9b3218c0/attempts/study_8d69fa96_33889dea781f48/638364d9b33fd6e5/traces",
+      "candidate": "study_8d69fa96_33889dea781f48",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[service_issue]contract_end_suspension|unseat_sim_card[PERSONA:Hard]",
+      "reward": 1.0,
+      "passed": true,
+      "turns": 11,
+      "wall_time_s": 50.43143892288208,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r14-ccad9b3218c0/attempts/study_8d69fa96_33889dea781f48/9c39164e5459239f/traces",
+      "candidate": "study_8d69fa96_33889dea781f48",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[service_issue]airplane_mode_on|unseat_sim_card[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 71.24119305610657,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r14-ccad9b3218c0/attempts/study_8d69fa96_33889dea781f48/6269f1fe67ce949c/traces",
+      "candidate": "study_8d69fa96_33889dea781f48",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    }
+  ],
+  "injected": [
+    "g-3-llm"
+  ],
+  "gates": [
+    {
+      "rule_id": "g-3-llm",
+      "tier": "volatile",
+      "status": "validated",
+      "confidence": 0.3333333333333333,
+      "elapsed_age": 11,
+      "successful_lifespan": 1,
+      "independent_subsets": [
+        "18b21fc8c621a2d706fb80095cec15e08209cae9ee2df74ccfd676fc7f2998b2",
+        "8c365c5fbc903ef295103d344fa8b46e34d9b44109eacce445590aeaf7e56396",
+        "bd00a3113932fdb15c4f424529cc17292239b5e5a7ba473417d0716456a95544",
+        "ffad62eb89d76dfcbadb0d9ff9cd5ada82b6dbec7cd19e190a30cef220877f0b"
+      ],
+      "successes": 1,
+      "failures": 3,
+      "blockers": [
+        "confidence 0.333 < 0.8",
+        "successful_lifespan 1 < 3"
+      ]
+    }
+  ],
+  "counts": {
+    "stable": 0,
+    "volatile": 1,
+    "active": 1,
+    "pending": 0
+  }
+}

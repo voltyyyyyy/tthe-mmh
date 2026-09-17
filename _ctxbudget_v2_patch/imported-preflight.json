@@ -1,0 +1,7 @@
+{
+  "protocol": "imported-preflight-v2",
+  "source_root": "/home/yangfan/mmh-exp/full375-20260916",
+  "ling_receipt": "ling-preflight baseline four-domain scores, including banking_knowledge_task_040 scored 0 after a response-backed native 131072-token context limit",
+  "qwen_receipt": "study_2bdca7ea_3a90e4a76aa441; waiter requires its durable four-task scores.json before Qwen full launch",
+  "classifier": "repo-ctxbudget-v2 preserves native HTTP 400 context limits as scored capability failures and keeps unknown HTTP errors as transport/infrastructure exclusions"
+}

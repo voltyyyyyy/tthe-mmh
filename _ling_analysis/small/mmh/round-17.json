@@ -1,0 +1,135 @@
+{
+  "round": 17,
+  "domain": "telecom",
+  "records": [
+    {
+      "task": "telecom_[mobile_data_issue]bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 47.6265344619751,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r17-18bee463bb56/attempts/study_8d69fa96_91a8e87d156c4a/005f5eca845fd6c0/traces",
+      "candidate": "study_8d69fa96_91a8e87d156c4a",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_storage_permission|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_off[PERSONA:Easy]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 42.81650352478027,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r17-18bee463bb56/attempts/study_8d69fa96_91a8e87d156c4a/bf18d337214cb067/traces",
+      "candidate": "study_8d69fa96_91a8e87d156c4a",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 119.5231065750122,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r17-18bee463bb56/attempts/study_8d69fa96_91a8e87d156c4a/eb9d5ac209db9318/traces",
+      "candidate": "study_8d69fa96_91a8e87d156c4a",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[service_issue]airplane_mode_on|lock_sim_card_pin|overdue_bill_suspension|unseat_sim_card[PERSONA:Easy]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 33.55600905418396,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r17-18bee463bb56/attempts/study_8d69fa96_91a8e87d156c4a/998c7b293a9b8c22/traces",
+      "candidate": "study_8d69fa96_91a8e87d156c4a",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[service_issue]airplane_mode_on|break_apn_settings|lock_sim_card_pin|overdue_bill_suspension|unseat_sim_card[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 41.17237973213196,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r17-18bee463bb56/attempts/study_8d69fa96_91a8e87d156c4a/27149381551f8192/traces",
+      "candidate": "study_8d69fa96_91a8e87d156c4a",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]bad_network_preference|break_app_both_permissions[PERSONA:Easy]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 42.5801215171814,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r17-18bee463bb56/attempts/study_8d69fa96_91a8e87d156c4a/5c7855f9b4611880/traces",
+      "candidate": "study_8d69fa96_91a8e87d156c4a",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]airplane_mode_on|break_app_both_permissions[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 27.440825700759888,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r17-18bee463bb56/attempts/study_8d69fa96_91a8e87d156c4a/89e42a81850e54ea/traces",
+      "candidate": "study_8d69fa96_91a8e87d156c4a",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[service_issue]airplane_mode_on|break_apn_settings|overdue_bill_suspension[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 21.764434576034546,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r17-18bee463bb56/attempts/study_8d69fa96_91a8e87d156c4a/633e054f1b17ffa5/traces",
+      "candidate": "study_8d69fa96_91a8e87d156c4a",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]data_saver_mode_on|data_usage_exceeded[PERSONA:Easy]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 37.54350304603577,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r17-18bee463bb56/attempts/study_8d69fa96_91a8e87d156c4a/3191222efcdcbd15/traces",
+      "candidate": "study_8d69fa96_91a8e87d156c4a",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]bad_network_preference|bad_wifi_calling|break_app_both_permissions|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 36.14042687416077,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r17-18bee463bb56/attempts/study_8d69fa96_91a8e87d156c4a/1f6c2b493ce64e75/traces",
+      "candidate": "study_8d69fa96_91a8e87d156c4a",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_both_permissions|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_on[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 42.74109363555908,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r17-18bee463bb56/attempts/study_8d69fa96_91a8e87d156c4a/7d481d9fbb6e3c27/traces",
+      "candidate": "study_8d69fa96_91a8e87d156c4a",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    }
+  ],
+  "injected": [],
+  "gates": [],
+  "counts": {
+    "stable": 0,
+    "volatile": 0,
+    "active": 0,
+    "pending": 0
+  }
+}

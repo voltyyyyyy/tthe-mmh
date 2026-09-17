@@ -1,0 +1,259 @@
+diff --git a/benchmarks/tau3/adapter.py b/benchmarks/tau3/adapter.py
+index bdbd34f..2dec6fb 100644
+--- a/benchmarks/tau3/adapter.py
++++ b/benchmarks/tau3/adapter.py
+@@ -15,7 +15,7 @@ import re
+ import sys
+ import tempfile
+ from pathlib import Path
+-from typing import Any, List, Optional
++from typing import Any, Dict, List, Optional
+ 
+ from pydantic import BaseModel, Field
+ 
+@@ -26,11 +26,36 @@ from benchmarks.tau3.stage2 import (
+     judge_candidate as _stage2_judge_candidate,
+     load_baseline_pool as _stage2_load_baseline_pool,
+ )
+-from benchmarks.tau3.pointwise_reward import (
+-    PointwiseJudgeRewardConfig,
+-    judge_trajectory_pointwise as _pointwise_judge_trajectory,
+-    validate_pointwise_reward_config as _validate_pointwise_reward_config,
+-)
++try:
++    from benchmarks.tau3.pointwise_reward import (
++        PointwiseJudgeRewardConfig,
++        judge_trajectory_pointwise as _pointwise_judge_trajectory,
++        validate_pointwise_reward_config as _validate_pointwise_reward_config,
++    )
++except ModuleNotFoundError as exc:
++    if exc.name != "benchmarks.tau3.pointwise_reward":
++        raise
++
++    class PointwiseJudgeRewardConfig(BaseModel):
++        """Schema fallback for checkouts without the optional pointwise module."""
++
++        config_path: str
++        model: Optional[str] = None
++        timeout_s: int = 180
++        min_score: float = 1
++        max_score: float = 100
++        pass_threshold: float = 0.5
++
++    def _pointwise_unavailable(*_args: Any, **_kwargs: Any) -> None:
++        raise RuntimeError(
++            "pointwise_judge_reward was requested, but the optional "
++            "benchmarks.tau3.pointwise_reward module is absent"
++        )
++
++    _validate_pointwise_reward_config = _pointwise_unavailable
++
++    async def _pointwise_judge_trajectory(*args: Any, **kwargs: Any) -> Any:
++        return _pointwise_unavailable(*args, **kwargs)
+ from meta_agent.core import adapters
+ from meta_agent.core.benchmark import Benchmark
+ from meta_agent.core.targets import detect_target
+@@ -126,6 +151,10 @@ class TauBackend(BaseModel):
+     user_model: str = "gpt-4o"
+     user_model_provider: str = "openai"
+     task_ids: Optional[List[str]] = None
++    # Domain-qualified task selection for multi-domain suites. IDs overlap
++    # across airline/retail/etc., so a flat task_ids list is ambiguous.
++    task_ids_by_domain: Optional[Dict[str, List[str]]] = None
++    retrieval_config: Optional[str] = None
+     judge_model: Optional[str] = None
+     judge_strategy: str = "binary"
+     sample_size: Optional[int] = None
+@@ -211,8 +240,15 @@ def parse_backend(bench: Benchmark) -> TauBackend:
+ 
+ 
+ def task_pool(bench: Benchmark) -> List[str]:
+-    """Tau-bench candidate task pool (explicit task_ids if set)."""
+-    return list(parse_backend(bench).task_ids or [])
++    """Return stable, domain-qualified task names for batching."""
++    backend = parse_backend(bench)
++    if backend.task_ids_by_domain:
++        return [
++            f"{domain}:{task_id}"
++            for domain in backend.domains
++            for task_id in backend.task_ids_by_domain.get(domain, [])
++        ]
++    return list(backend.task_ids or [])
+ 
+ 
+ async def run(
+@@ -236,10 +272,18 @@ async def run(
+ 
+     tau_backend = parse_backend(benchmark)
+     domains = tau_backend.domains
++    qualified_filter: dict[str, set[str]] = {}
+     if task_filter:
+-        filtered = [d for d in domains if d in task_filter]
+-        if filtered:
+-            domains = filtered
++        for item in task_filter:
++            if ":" in item:
++                domain, task_id = item.split(":", 1)
++                qualified_filter.setdefault(domain, set()).add(task_id)
++        if qualified_filter:
++            domains = [d for d in domains if d in qualified_filter]
++        else:
++            filtered = [d for d in domains if d in task_filter]
++            if filtered:
++                domains = filtered
+ 
+     user_model: Optional[str] = _resolve_tau_user_model(
+         tau_backend.user_model or None,
+@@ -253,9 +297,15 @@ async def run(
+     task_list: list[tuple[str, Any]] = []
+     for domain in domains:
+         tasks = _get_tasks(domain)
+-        if tau_backend.task_ids:
++        if tau_backend.task_ids_by_domain is not None:
++            id_set = set(tau_backend.task_ids_by_domain.get(domain, []))
++            tasks = [t for t in tasks if str(t.id) in id_set]
++        elif tau_backend.task_ids:
+             id_set = set(tau_backend.task_ids)
+             tasks = [t for t in tasks if str(t.id) in id_set]
++        if qualified_filter:
++            id_set = qualified_filter.get(domain, set())
++            tasks = [t for t in tasks if str(t.id) in id_set]
+         for task in tasks:
+             task_list.append((domain, task))
+ 
+@@ -312,7 +362,7 @@ async def run(
+     running_passed = 0
+     _lock = asyncio.Lock()
+ 
+-    TASK_TIMEOUT_S = 600
++    TASK_TIMEOUT_S = int(os.environ.get("TAU3_TASK_TIMEOUT_S", "900"))
+     MAX_RETRIES = 10
+     RETRY_DELAY_S = 15
+ 
+@@ -336,6 +386,7 @@ async def run(
+                                 user_model=user_model,
+                                 judge_model=tau_backend.judge_model,
+                                 judge_strategy=tau_backend.judge_strategy,
++                                retrieval_config=tau_backend.retrieval_config,
+                                 timeout_s=TASK_TIMEOUT_S,
+                             ),
+                             timeout=TASK_TIMEOUT_S,
+diff --git a/meta_agent/loop/codex_wrapper.py b/meta_agent/loop/codex_wrapper.py
+index 1a67640..cd9fd5c 100644
+--- a/meta_agent/loop/codex_wrapper.py
++++ b/meta_agent/loop/codex_wrapper.py
+@@ -37,16 +37,40 @@ def _toml_string(value: str) -> str:
+ 
+ 
+ def _maybe_configure_azure_provider(model: Optional[str]) -> tuple[Optional[str], list[str]]:
+-    """Map Azure deployment names onto Codex's OpenAI-compatible provider config."""
++    """Map Azure or local model names onto a Codex Responses provider config."""
+     if not model:
+         return model, []
+ 
+     requested = model
++    if model.startswith("local/") or model.startswith("local:"):
++        deployment = model.split("/", 1)[1] if "/" in model else model.split(":", 1)[1]
++        base_url = (
++            os.environ.get("LOCAL_OPENAI_V1_BASE", "").strip()
++            or os.environ.get("OPENAI_BASE_URL", "").strip()
++        )
++        if not base_url:
++            raise RuntimeError(
++                f"Local Codex proposer requested ({requested}) but no local OpenAI "
++                "v1 base URL is configured. Set LOCAL_OPENAI_V1_BASE."
++            )
++        env_key = "LOCAL_MODEL_API_KEY"
++        return deployment, [
++            "-c", 'model_provider="local_meta_agent"',
++            "-c", "model_providers.local_meta_agent.name=" + _toml_string("Local Meta-Agent"),
++            "-c", "model_providers.local_meta_agent.base_url=" + _toml_string(base_url.rstrip("/")),
++            "-c", 'model_providers.local_meta_agent.wire_api="responses"',
++            "-c", "model_providers.local_meta_agent.env_key=" + _toml_string(env_key),
++            "-c", "model_providers.local_meta_agent.requires_openai_auth=false",
++            "-c", "model_providers.local_meta_agent.supports_websockets=false",
++        ]
++
+     deployment = model
+     if model.startswith("azure:"):
+         deployment = model.split(":", 1)[1]
+     elif model.startswith("azure/"):
+         deployment = model.split("/", 1)[1]
++    elif model.startswith("openai/"):
++        deployment = model.split("/", 1)[1]
+     else:
+         azure_deployment = os.environ.get("AZURE_GPT55_DEPLOYMENT", "").strip()
+         if not azure_deployment or model != azure_deployment:
+@@ -72,6 +96,9 @@ def _maybe_configure_azure_provider(model: Optional[str]) -> tuple[Optional[str]
+         "-c", 'model_provider="azure"',
+         "-c", "model_providers.azure.name=" + _toml_string("Azure OpenAI"),
+         "-c", "model_providers.azure.base_url=" + _toml_string(base_url.rstrip("/")),
++        # Codex CLI 0.147+ rejects any other value; NIM/OpenRouter are
++        # reached via their Responses-compatible endpoints (NIM serves
++        # /responses natively).
+         "-c", 'model_providers.azure.wire_api="responses"',
+         "-c", "model_providers.azure.env_key=" + _toml_string(env_key),
+         "-c", "model_providers.azure.requires_openai_auth=false",
+@@ -117,6 +144,9 @@ def build_command(model: Optional[str], *, cwd: Path) -> list[str]:
+     ]
+     cmd.extend(provider_args)
+     cmd.extend(_reasoning_effort_args(model))
++    context_window = os.environ.get("CODEX_MODEL_CONTEXT_WINDOW", "").strip()
++    if context_window:
++        cmd.extend(["-c", f"model_context_window={int(context_window)}"])
+     tool_output_token_limit = os.environ.get(
+         "CODEX_TOOL_OUTPUT_TOKEN_LIMIT", "4000",
+     ).strip()
+@@ -125,12 +155,20 @@ def build_command(model: Optional[str], *, cwd: Path) -> list[str]:
+     if tool_output_token_limit:
+         cmd.extend(["-c", f"tool_output_token_limit={tool_output_token_limit}"])
+     if not codex_danger:
+-        cmd.append("--full-auto")
++        # Noninteractive local runs cannot invoke Codex's separate
++        # codex-auto-review model. Keep commands confined instead.
++        cmd.extend(["-c", 'approval_policy="never"'])
+     if model:
+         cmd.extend(["--model", model])
+-    codex_sandbox = os.environ.get("CODEX_SANDBOX_MODE", "").strip()
++    codex_sandbox = os.environ.get("CODEX_SANDBOX_MODE", "workspace-write").strip()
+     if codex_sandbox and not codex_danger:
+         cmd.extend(["--sandbox", codex_sandbox])
++        if (
++            codex_sandbox == "workspace-write"
++            and os.environ.get("CODEX_SANDBOX_NETWORK_ACCESS", "").strip().lower()
++            in {"1", "true", "yes"}
++        ):
++            cmd.extend(["-c", "sandbox_workspace_write.network_access=true"])
+     if codex_danger:
+         cmd.append("--dangerously-bypass-approvals-and-sandbox")
+     cmd.append("-")
+diff --git a/meta_agent/loop/epoch.py b/meta_agent/loop/epoch.py
+index 12c50a1..4562760 100644
+--- a/meta_agent/loop/epoch.py
++++ b/meta_agent/loop/epoch.py
+@@ -10,6 +10,7 @@ import json
+ import os
+ import re
+ import shutil
++import time
+ from dataclasses import dataclass
+ from pathlib import Path
+ from typing import Any, Optional
+@@ -704,6 +705,17 @@ def _maybe_run_baseline(state: LoopState) -> None:
+         else:
+             logger.info("Baseline evaluation failed")
+ 
++    external_holdout = os.environ.get("META_AGENT_EXTERNAL_HOLDOUT_BASELINE", "").strip()
++    if state.holdout_dir is not None and external_holdout:
++        external_dir = Path(external_holdout)
++        target_dir = state.holdout_dir / "baseline"
++        logger.info(f"Waiting for external holdout baseline: {external_dir}")
++        while not (external_dir / "scores.json").is_file():
++            time.sleep(60)
++        if not target_dir.exists():
++            shutil.copytree(external_dir, target_dir)
++        logger.info(f"Imported external holdout baseline into {target_dir}")
++
+     holdout_has_baseline = (
+         state.holdout_dir is not None
+         and experience.has_candidate(state.holdout_dir, "baseline")

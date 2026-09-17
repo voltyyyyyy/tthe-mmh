@@ -1,0 +1,156 @@
+{
+  "round": 7,
+  "domain": "retail",
+  "records": [
+    {
+      "task": "retail_43",
+      "reward": 1.0,
+      "passed": true,
+      "turns": 14,
+      "wall_time_s": 158.6010823249817,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r7-bf5761ee8cac/attempts/study_8d69fa96_4ab2486b14bb4f/ab56864e9ad216eb/traces",
+      "candidate": "study_8d69fa96_4ab2486b14bb4f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "retail_106",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 58.0413281917572,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r7-bf5761ee8cac/attempts/study_8d69fa96_4ab2486b14bb4f/8a0dbe7ea5b7444a/traces",
+      "candidate": "study_8d69fa96_4ab2486b14bb4f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "retail_107",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 48.584301233291626,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r7-bf5761ee8cac/attempts/study_8d69fa96_4ab2486b14bb4f/6a639726474ae09d/traces",
+      "candidate": "study_8d69fa96_4ab2486b14bb4f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "retail_19",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 34.7623016834259,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r7-bf5761ee8cac/attempts/study_8d69fa96_4ab2486b14bb4f/d6b03a2cce9768d7/traces",
+      "candidate": "study_8d69fa96_4ab2486b14bb4f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "retail_7",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 59.87387156486511,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r7-bf5761ee8cac/attempts/study_8d69fa96_4ab2486b14bb4f/1797a8bf1b5a10f0/traces",
+      "candidate": "study_8d69fa96_4ab2486b14bb4f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "retail_28",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 26.599019765853882,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r7-bf5761ee8cac/attempts/study_8d69fa96_4ab2486b14bb4f/39cb378dfb203f73/traces",
+      "candidate": "study_8d69fa96_4ab2486b14bb4f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "retail_95",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 36.43200635910034,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r7-bf5761ee8cac/attempts/study_8d69fa96_4ab2486b14bb4f/070a8b8d39fa587a/traces",
+      "candidate": "study_8d69fa96_4ab2486b14bb4f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "retail_78",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 37.486332654953,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r7-bf5761ee8cac/attempts/study_8d69fa96_4ab2486b14bb4f/8c9969d9ed2cb1ba/traces",
+      "candidate": "study_8d69fa96_4ab2486b14bb4f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "retail_111",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 28,
+      "wall_time_s": 218.61892008781433,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r7-bf5761ee8cac/attempts/study_8d69fa96_4ab2486b14bb4f/f45b54ee812108ac/traces",
+      "candidate": "study_8d69fa96_4ab2486b14bb4f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "retail_51",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 22.692545413970947,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r7-bf5761ee8cac/attempts/study_8d69fa96_4ab2486b14bb4f/8abf76f15d96ca94/traces",
+      "candidate": "study_8d69fa96_4ab2486b14bb4f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "retail_88",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 66.09212470054626,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r7-bf5761ee8cac/attempts/study_8d69fa96_4ab2486b14bb4f/5d466bd9d309d995/traces",
+      "candidate": "study_8d69fa96_4ab2486b14bb4f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    }
+  ],
+  "injected": [
+    "g-3-llm"
+  ],
+  "gates": [
+    {
+      "rule_id": "g-3-llm",
+      "tier": "volatile",
+      "status": "validated",
+      "confidence": 0.5,
+      "elapsed_age": 4,
+      "successful_lifespan": 1,
+      "independent_subsets": [
+        "18b21fc8c621a2d706fb80095cec15e08209cae9ee2df74ccfd676fc7f2998b2",
+        "8c365c5fbc903ef295103d344fa8b46e34d9b44109eacce445590aeaf7e56396"
+      ],
+      "successes": 1,
+      "failures": 1,
+      "blockers": [
+        "confidence 0.500 < 0.8",
+        "successful_lifespan 1 < 3"
+      ]
+    }
+  ],
+  "counts": {
+    "stable": 0,
+    "volatile": 1,
+    "active": 1,
+    "pending": 0
+  }
+}

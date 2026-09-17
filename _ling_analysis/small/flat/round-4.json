@@ -1,0 +1,88 @@
+{
+  "round": 4,
+  "domain": "airline",
+  "records": [
+    {
+      "task": "airline_3",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 7,
+      "wall_time_s": 37.26320195198059,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r4-136d09ef35b3/attempts/study_8d69fa96_d37619144e9945/ca78bf419ba6e22b/traces",
+      "candidate": "study_8d69fa96_d37619144e9945",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_45",
+      "reward": 1.0,
+      "passed": true,
+      "turns": 30,
+      "wall_time_s": 201.49023985862732,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r4-136d09ef35b3/attempts/study_8d69fa96_d37619144e9945/b2b9da937e7ff8e6/traces",
+      "candidate": "study_8d69fa96_d37619144e9945",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_29",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 28.942320346832275,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r4-136d09ef35b3/attempts/study_8d69fa96_d37619144e9945/e36252f0e6f9839b/traces",
+      "candidate": "study_8d69fa96_d37619144e9945",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_2",
+      "reward": 1.0,
+      "passed": true,
+      "turns": 50,
+      "wall_time_s": 26.8373920917511,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r4-136d09ef35b3/attempts/study_8d69fa96_d37619144e9945/7c0fb31a15f1f069/traces",
+      "candidate": "study_8d69fa96_d37619144e9945",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_27",
+      "reward": 1.0,
+      "passed": true,
+      "turns": 50,
+      "wall_time_s": 32.73680925369263,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/search-r4-136d09ef35b3/attempts/study_8d69fa96_d37619144e9945/a2b26d940cd85dd8/traces",
+      "candidate": "study_8d69fa96_d37619144e9945",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    }
+  ],
+  "injected": [],
+  "gates": [
+    {
+      "rule_id": "g-3-llm",
+      "tier": "volatile",
+      "status": "pending",
+      "confidence": 0.5,
+      "elapsed_age": 1,
+      "successful_lifespan": 0,
+      "independent_subsets": [],
+      "successes": 0,
+      "failures": 0,
+      "blockers": [
+        "status=pending",
+        "confidence 0.500 < 0.8",
+        "elapsed_age 1 < 3",
+        "successful_lifespan 0 < 3",
+        "independent_subsets 0 < 2"
+      ]
+    }
+  ],
+  "counts": {
+    "stable": 0,
+    "volatile": 1,
+    "active": 0,
+    "pending": 1
+  }
+}

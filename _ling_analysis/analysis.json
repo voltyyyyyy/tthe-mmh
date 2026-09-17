@@ -1,0 +1,1169 @@
+{
+  "complete": true,
+  "arms": {
+    "baseline": {
+      "scores": {
+        "search": {
+          "n": 225,
+          "passed": 22
+        },
+        "validation": {
+          "n": 75,
+          "passed": 6
+        },
+        "test": {
+          "n": 75,
+          "passed": 9
+        }
+      },
+      "staged": 0,
+      "promoted": 0,
+      "validation_decisions": {
+        "success": 0,
+        "failure": 0,
+        "indecisive": 0
+      },
+      "stable_probes": [],
+      "rounds": [
+        {
+          "round": 1,
+          "domain": "airline",
+          "n": 5,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 2,
+          "domain": "airline",
+          "n": 5,
+          "passed": 1,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 3,
+          "domain": "airline",
+          "n": 5,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 4,
+          "domain": "airline",
+          "n": 5,
+          "passed": 4,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 5,
+          "domain": "airline",
+          "n": 5,
+          "passed": 3,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 6,
+          "domain": "airline",
+          "n": 5,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 7,
+          "domain": "retail",
+          "n": 11,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 8,
+          "domain": "retail",
+          "n": 11,
+          "passed": 4,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 9,
+          "domain": "retail",
+          "n": 12,
+          "passed": 1,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 10,
+          "domain": "retail",
+          "n": 11,
+          "passed": 1,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 11,
+          "domain": "retail",
+          "n": 11,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 12,
+          "domain": "retail",
+          "n": 12,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 13,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 14,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 15,
+          "domain": "telecom",
+          "n": 12,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 16,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 17,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 18,
+          "domain": "telecom",
+          "n": 12,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 19,
+          "domain": "banking_knowledge",
+          "n": 9,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 20,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 21,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 22,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 23,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 24,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        }
+      ],
+      "trait_analysis": {
+        "n": 0,
+        "promoted": 0,
+        "status": "descriptive only; gate-controlled predictive analysis requires adequate events",
+        "note": "novelty = 1 - overlap; no stable reference when n_stable = 0",
+        "traits": {}
+      }
+    },
+    "mmh": {
+      "scores": {
+        "search": {
+          "n": 225,
+          "passed": 21
+        },
+        "validation": {
+          "n": 75,
+          "passed": 7
+        },
+        "test": {
+          "n": 75,
+          "passed": 10
+        }
+      },
+      "staged": 0,
+      "promoted": 0,
+      "validation_decisions": {
+        "success": 0,
+        "failure": 0,
+        "indecisive": 0
+      },
+      "stable_probes": [],
+      "rounds": [
+        {
+          "round": 1,
+          "domain": "airline",
+          "n": 5,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 2,
+          "domain": "airline",
+          "n": 5,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 3,
+          "domain": "airline",
+          "n": 5,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 4,
+          "domain": "airline",
+          "n": 5,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 5,
+          "domain": "airline",
+          "n": 5,
+          "passed": 3,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 6,
+          "domain": "airline",
+          "n": 5,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 7,
+          "domain": "retail",
+          "n": 11,
+          "passed": 1,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 8,
+          "domain": "retail",
+          "n": 11,
+          "passed": 3,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 9,
+          "domain": "retail",
+          "n": 12,
+          "passed": 1,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 10,
+          "domain": "retail",
+          "n": 11,
+          "passed": 1,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 11,
+          "domain": "retail",
+          "n": 11,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 12,
+          "domain": "retail",
+          "n": 12,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 13,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 14,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 15,
+          "domain": "telecom",
+          "n": 12,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 16,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 17,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 18,
+          "domain": "telecom",
+          "n": 12,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 19,
+          "domain": "banking_knowledge",
+          "n": 9,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 20,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 21,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 22,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 23,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 24,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        }
+      ],
+      "trait_analysis": {
+        "n": 0,
+        "promoted": 0,
+        "status": "descriptive only; gate-controlled predictive analysis requires adequate events",
+        "note": "novelty = 1 - overlap; no stable reference when n_stable = 0",
+        "traits": {}
+      }
+    },
+    "flat": {
+      "scores": {
+        "search": {
+          "n": 225,
+          "passed": 24
+        },
+        "validation": {
+          "n": 75,
+          "passed": 6
+        },
+        "test": {
+          "n": 75,
+          "passed": 8
+        }
+      },
+      "staged": 2,
+      "promoted": 0,
+      "validation_decisions": {
+        "success": 1,
+        "failure": 3,
+        "indecisive": 25
+      },
+      "stable_probes": [],
+      "rounds": [
+        {
+          "round": 1,
+          "domain": "airline",
+          "n": 5,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 2,
+          "domain": "airline",
+          "n": 5,
+          "passed": 1,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 0,
+            "active": 0,
+            "pending": 0
+          }
+        },
+        {
+          "round": 3,
+          "domain": "airline",
+          "n": 5,
+          "passed": 2,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 0,
+            "pending": 1
+          }
+        },
+        {
+          "round": 4,
+          "domain": "airline",
+          "n": 5,
+          "passed": 3,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 0,
+            "pending": 1
+          }
+        },
+        {
+          "round": 5,
+          "domain": "airline",
+          "n": 5,
+          "passed": 3,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 0,
+            "pending": 1
+          }
+        },
+        {
+          "round": 6,
+          "domain": "airline",
+          "n": 5,
+          "passed": 3,
+          "injected": [],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 1,
+            "pending": 0
+          }
+        },
+        {
+          "round": 7,
+          "domain": "retail",
+          "n": 11,
+          "passed": 1,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 1,
+            "pending": 0
+          }
+        },
+        {
+          "round": 8,
+          "domain": "retail",
+          "n": 11,
+          "passed": 5,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 1,
+            "pending": 0
+          }
+        },
+        {
+          "round": 9,
+          "domain": "retail",
+          "n": 12,
+          "passed": 1,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 1,
+            "pending": 0
+          }
+        },
+        {
+          "round": 10,
+          "domain": "retail",
+          "n": 11,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 1,
+            "pending": 0
+          }
+        },
+        {
+          "round": 11,
+          "domain": "retail",
+          "n": 11,
+          "passed": 1,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 1,
+            "pending": 0
+          }
+        },
+        {
+          "round": 12,
+          "domain": "retail",
+          "n": 12,
+          "passed": 1,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 1,
+            "pending": 0
+          }
+        },
+        {
+          "round": 13,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 1,
+            "pending": 0
+          }
+        },
+        {
+          "round": 14,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 1,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 1,
+            "pending": 0
+          }
+        },
+        {
+          "round": 15,
+          "domain": "telecom",
+          "n": 12,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 1,
+            "active": 1,
+            "pending": 0
+          }
+        },
+        {
+          "round": 16,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 2,
+            "active": 1,
+            "pending": 1
+          }
+        },
+        {
+          "round": 17,
+          "domain": "telecom",
+          "n": 11,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 2,
+            "active": 1,
+            "pending": 1
+          }
+        },
+        {
+          "round": 18,
+          "domain": "telecom",
+          "n": 12,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 2,
+            "active": 1,
+            "pending": 1
+          }
+        },
+        {
+          "round": 19,
+          "domain": "banking_knowledge",
+          "n": 9,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 2,
+            "active": 1,
+            "pending": 1
+          }
+        },
+        {
+          "round": 20,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 2,
+            "active": 1,
+            "pending": 1
+          }
+        },
+        {
+          "round": 21,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 2,
+            "active": 1,
+            "pending": 1
+          }
+        },
+        {
+          "round": 22,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 2,
+            "active": 1,
+            "pending": 1
+          }
+        },
+        {
+          "round": 23,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 2,
+            "active": 1,
+            "pending": 1
+          }
+        },
+        {
+          "round": 24,
+          "domain": "banking_knowledge",
+          "n": 10,
+          "passed": 0,
+          "injected": [
+            "g-3-llm"
+          ],
+          "counts": {
+            "stable": 0,
+            "volatile": 2,
+            "active": 1,
+            "pending": 1
+          }
+        }
+      ],
+      "trait_analysis": {
+        "n": 2,
+        "promoted": 0,
+        "status": "descriptive only; gate-controlled predictive analysis requires adequate events",
+        "note": "novelty = 1 - overlap; no stable reference when n_stable = 0",
+        "traits": {}
+      }
+    }
+  },
+  "paired": {
+    "search": {
+      "mmh_vs_flat": {
+        "available": true,
+        "n": 225,
+        "wins": 5,
+        "losses": 8,
+        "difference": -0.013333333333333334,
+        "bootstrap_95ci": [
+          -0.044444444444444446,
+          0.017777777777777778
+        ],
+        "mcnemar_exact_p": 0.5810546875,
+        "unit": "task; not independent study seeds"
+      },
+      "mmh_vs_baseline": {
+        "available": true,
+        "n": 225,
+        "wins": 4,
+        "losses": 5,
+        "difference": -0.0044444444444444444,
+        "bootstrap_95ci": [
+          -0.03111111111111111,
+          0.017777777777777778
+        ],
+        "mcnemar_exact_p": 1.0,
+        "unit": "task; not independent study seeds"
+      }
+    },
+    "validation": {
+      "mmh_vs_flat": {
+        "available": true,
+        "n": 75,
+        "wins": 3,
+        "losses": 2,
+        "difference": 0.013333333333333334,
+        "bootstrap_95ci": [
+          -0.04,
+          0.06666666666666667
+        ],
+        "mcnemar_exact_p": 1.0,
+        "unit": "task; not independent study seeds"
+      },
+      "mmh_vs_baseline": {
+        "available": true,
+        "n": 75,
+        "wins": 2,
+        "losses": 1,
+        "difference": 0.013333333333333334,
+        "bootstrap_95ci": [
+          -0.02666666666666667,
+          0.06666666666666667
+        ],
+        "mcnemar_exact_p": 1.0,
+        "unit": "task; not independent study seeds"
+      }
+    },
+    "test": {
+      "mmh_vs_flat": {
+        "available": true,
+        "n": 75,
+        "wins": 4,
+        "losses": 2,
+        "difference": 0.02666666666666667,
+        "bootstrap_95ci": [
+          -0.04,
+          0.09333333333333334
+        ],
+        "mcnemar_exact_p": 0.6875,
+        "unit": "task; not independent study seeds"
+      },
+      "mmh_vs_baseline": {
+        "available": true,
+        "n": 75,
+        "wins": 3,
+        "losses": 2,
+        "difference": 0.013333333333333334,
+        "bootstrap_95ci": [
+          -0.04,
+          0.06666666666666667
+        ],
+        "mcnemar_exact_p": 1.0,
+        "unit": "task; not independent study seeds"
+      }
+    }
+  },
+  "research_conclusion": "Not established: inspect mechanism counts, paired uncertainty and replicate streams.",
+  "limitations": [
+    "one trial/seed; no pass^2 or pass^3 estimate",
+    "domain difficulty shifts alone do not prove concept drift",
+    "no stable promotion means stable-vs-volatile trait question is unidentifiable",
+    "unpromoted rules include right-censored late proposals"
+  ]
+}

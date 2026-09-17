@@ -1,0 +1,112 @@
+[
+  {
+    "task": "airline_15",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 50,
+    "wall_time_s": 78.6606719493866,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/final-test-airline-3f2d978877dd/attempts/study_8d69fa96_109b241e8a1647/e09d4a11c8f8a1db/traces",
+    "candidate": "study_8d69fa96_109b241e8a1647",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "airline_24",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 50,
+    "wall_time_s": 20.488454818725586,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/final-test-airline-3f2d978877dd/attempts/study_8d69fa96_109b241e8a1647/36f652f8f4b34e33/traces",
+    "candidate": "study_8d69fa96_109b241e8a1647",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "airline_25",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 50,
+    "wall_time_s": 30.00005269050598,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/final-test-airline-3f2d978877dd/attempts/study_8d69fa96_109b241e8a1647/3da28d03a22e24a6/traces",
+    "candidate": "study_8d69fa96_109b241e8a1647",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "airline_5",
+    "reward": 1.0,
+    "passed": true,
+    "turns": 9,
+    "wall_time_s": 157.65655183792114,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/final-test-airline-3f2d978877dd/attempts/study_8d69fa96_109b241e8a1647/4d4f35a459ec845c/traces",
+    "candidate": "study_8d69fa96_109b241e8a1647",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "airline_41",
+    "reward": 1.0,
+    "passed": true,
+    "turns": 50,
+    "wall_time_s": 29.40093684196472,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/final-test-airline-3f2d978877dd/attempts/study_8d69fa96_109b241e8a1647/862ce551a13ec9dc/traces",
+    "candidate": "study_8d69fa96_109b241e8a1647",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "airline_6",
+    "reward": 1.0,
+    "passed": true,
+    "turns": 50,
+    "wall_time_s": 23.62726354598999,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/final-test-airline-3f2d978877dd/attempts/study_8d69fa96_109b241e8a1647/3397e9d140f408e2/traces",
+    "candidate": "study_8d69fa96_109b241e8a1647",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "airline_36",
+    "reward": 1.0,
+    "passed": true,
+    "turns": 50,
+    "wall_time_s": 74.39221215248108,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/final-test-airline-3f2d978877dd/attempts/study_8d69fa96_109b241e8a1647/9a403c18b7989e00/traces",
+    "candidate": "study_8d69fa96_109b241e8a1647",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "airline_35",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 50,
+    "wall_time_s": 37.621201276779175,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/final-test-airline-3f2d978877dd/attempts/study_8d69fa96_109b241e8a1647/6936dd8deea16510/traces",
+    "candidate": "study_8d69fa96_109b241e8a1647",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "airline_31",
+    "reward": 1.0,
+    "passed": true,
+    "turns": 50,
+    "wall_time_s": 44.50130748748779,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/final-test-airline-3f2d978877dd/attempts/study_8d69fa96_109b241e8a1647/c98933815f29e322/traces",
+    "candidate": "study_8d69fa96_109b241e8a1647",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "airline_49",
+    "reward": 1.0,
+    "passed": true,
+    "turns": 50,
+    "wall_time_s": 41.32504844665527,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/flat/evaluations/final-test-airline-3f2d978877dd/attempts/study_8d69fa96_109b241e8a1647/68c70fcb1aecdef8/traces",
+    "candidate": "study_8d69fa96_109b241e8a1647",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  }
+]

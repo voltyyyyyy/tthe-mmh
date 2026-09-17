@@ -1,0 +1,32 @@
+[
+  {
+    "guideline": {
+      "guideline_id": "g-16-llm",
+      "phi": "A task with a 'signature' of official_task_failure and an empty conversation after 50 turns with 0 reward, indicating a stuck or infinite loop.",
+      "psi": "The agent must detect this pattern and reset the task or seek clarification.",
+      "omega": "pending",
+      "initial_confidence": 0.8,
+      "provenance": {
+        "proposer": "llm",
+        "round": 16
+      }
+    },
+    "hypothesis": "model-identified common cause across recent failures",
+    "expected_benefit": "recurrence of the identified pattern should stop failing",
+    "risks": "model may over-generalize from few examples",
+    "source_tasks": [
+      "telecom_[service_issue]airplane_mode_on|break_apn_settings|lock_sim_card_pin[PERSONA:None]",
+      "telecom_[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_sms_permission|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_on[PERSONA:None]",
+      "telecom_[mobile_data_issue]airplane_mode_on|bad_network_preference|user_abroad_roaming_enabled_off[PERSONA:Easy]",
+      "telecom_[mobile_data_issue]airplane_mode_on|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Hard]",
+      "telecom_[mobile_data_issue]data_mode_off|data_usage_exceeded[PERSONA:None]",
+      "telecom_[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:None]",
+      "telecom_[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+      "telecom_[mobile_data_issue]airplane_mode_on|data_saver_mode_on|user_abroad_roaming_disabled_on[PERSONA:None]",
+      "telecom_[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_storage_permission|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_off[PERSONA:Easy]",
+      "telecom_[service_issue]airplane_mode_on|break_apn_settings|lock_sim_card_pin|overdue_bill_suspension[PERSONA:Hard]",
+      "telecom_[mms_issue]break_app_both_permissions|unseat_sim_card|user_abroad_roaming_disabled_on[PERSONA:Hard]"
+    ],
+    "judge_confidence": 0.9
+  }
+]

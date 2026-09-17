@@ -1,0 +1,69 @@
+{
+  "round": 6,
+  "domain": "airline",
+  "records": [
+    {
+      "task": "airline_1",
+      "reward": 1.0,
+      "passed": true,
+      "turns": 50,
+      "wall_time_s": 34.080504417419434,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r6-6d9023d3c147/attempts/study_8d69fa96_1479a336465742/a455a86076ecf2e0/traces",
+      "candidate": "study_8d69fa96_1479a336465742",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_28",
+      "reward": 1.0,
+      "passed": true,
+      "turns": 50,
+      "wall_time_s": 36.60808038711548,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r6-6d9023d3c147/attempts/study_8d69fa96_1479a336465742/34559e3622a1ba9c/traces",
+      "candidate": "study_8d69fa96_1479a336465742",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_23",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 35.693366289138794,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r6-6d9023d3c147/attempts/study_8d69fa96_1479a336465742/53053da53cd82649/traces",
+      "candidate": "study_8d69fa96_1479a336465742",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_20",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 29.31193995475769,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r6-6d9023d3c147/attempts/study_8d69fa96_1479a336465742/4232a8c00b58a084/traces",
+      "candidate": "study_8d69fa96_1479a336465742",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_37",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 29.33365774154663,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/search-r6-6d9023d3c147/attempts/study_8d69fa96_1479a336465742/8999a1ed6537bf97/traces",
+      "candidate": "study_8d69fa96_1479a336465742",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    }
+  ],
+  "injected": [],
+  "gates": [],
+  "counts": {
+    "stable": 0,
+    "volatile": 0,
+    "active": 0,
+    "pending": 0
+  }
+}

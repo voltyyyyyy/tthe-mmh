@@ -1,0 +1,36 @@
+[
+  {
+    "rule_id": "g-3-llm",
+    "staged_round": 3,
+    "tier_at_measure": "volatile",
+    "novelty": 1.0,
+    "overlap": 0.0,
+    "uniqueness": 1.0,
+    "sparsity": 1.0,
+    "surprise": 0.0,
+    "lifespan": 0,
+    "elapsed_age": 0,
+    "n_stable": 0,
+    "n_volatile": 0,
+    "is_stable_now": "",
+    "promoted": 0,
+    "ex_ante_surprise": 0.0
+  },
+  {
+    "rule_id": "g-16-llm",
+    "staged_round": 16,
+    "tier_at_measure": "volatile",
+    "novelty": 1.0,
+    "overlap": 0.0,
+    "uniqueness": 0.02237831550519176,
+    "sparsity": 0.02237831550519176,
+    "surprise": 0.0,
+    "lifespan": 0,
+    "elapsed_age": 0,
+    "n_stable": 0,
+    "n_volatile": 1,
+    "is_stable_now": "",
+    "promoted": 0,
+    "ex_ante_surprise": 0.0010005003335835344
+  }
+]

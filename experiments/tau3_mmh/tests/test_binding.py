@@ -91,11 +91,37 @@ def test_guideline_block_is_stable_and_auditable() -> None:
     print("  PASS guideline block renders deterministically for diffing")
 
 
-def test_empty_rules_render_a_baseline_not_an_empty_prompt() -> None:
+def test_empty_rules_render_the_untouched_baseline_block() -> None:
+    """With no learned rules the block must equal the frozen baseline exactly.
+
+    This is what makes the baseline arm byte-identical to the archived
+    ``reference_all375`` harness, so the only difference between arms is what the memory
+    added.
+    """
+    from experiments.tau3_mmh.tau3_harness.harness import BASELINE_GUIDELINES
+
     block = render_guideline_block([])
-    assert "Core operating rules" in block
-    assert len(block.strip()) > 50, "an empty guideline set must still be a usable prompt"
-    print("  PASS empty guideline set renders the frozen baseline block")
+    assert block == BASELINE_GUIDELINES, "empty rule set must render the baseline unchanged"
+    assert "Customer-service operating rules" in block
+    assert len(block.strip()) > 200
+    print("  PASS empty rule set renders the untouched baseline block")
+
+
+def test_learned_rules_are_appended_not_substituted() -> None:
+    """Learned guidelines must ADD to the baseline, never replace it.
+
+    If a learned block replaced the baseline the agent would lose its core operating rules
+    the moment the first guideline was promoted -- a regression that would look like the
+    memory system making things worse.
+    """
+    from experiments.tau3_mmh.tau3_harness.harness import BASELINE_GUIDELINES
+
+    rules = [_Rule("the customer changes their mind", "address the new request")]
+    block = render_guideline_block(rules)
+    assert block.startswith(BASELINE_GUIDELINES), "baseline must remain present"
+    assert "Learned operating rules" in block
+    assert "- When the customer changes their mind: address the new request" in block
+    print("  PASS learned rules are appended to the baseline, not substituted")
 
 
 def test_write_guidelines_round_trips(tmp_path: Path | None = None) -> None:
@@ -106,6 +132,29 @@ def test_write_guidelines_round_trips(tmp_path: Path | None = None) -> None:
         write_guidelines([_Rule("x", "y")], target)
         assert target.exists() and "When x: y" in target.read_text(encoding="utf-8")
     print("  PASS guidelines are written where the harness reads them")
+
+
+def test_requested_keys_only_replace_the_domain_separator() -> None:
+    """Telecom task ids contain colons; a blanket replace corrupts them.
+
+    Regression for a real abort: the benchmark reports
+    ``telecom_...[PERSONA:Hard]`` but key normalisation produced
+    ``telecom_...[PERSONA_Hard]``, so the task-set verification refused the results as
+    belonging to another run. Only the first colon is the domain separator.
+    """
+    from experiments.tau3_mmh.round_driver import RoundDriver
+
+    telecom = "telecom:[service_issue]lock_sim_card_pin[PERSONA:Hard]"
+    assert RoundDriver._requested_keys([telecom]) == {
+        "telecom_[service_issue]lock_sim_card_pin[PERSONA:Hard]"
+    }
+    # Plain keys are unaffected.
+    assert RoundDriver._requested_keys(["airline:11", "retail:67"]) == {"airline_11", "retail_67"}
+    # Banking uses an underscore-style id with no colon beyond the separator.
+    assert RoundDriver._requested_keys(["banking_knowledge:task_055"]) == {
+        "banking_knowledge_task_055"
+    }
+    print("  PASS only the domain separator colon is replaced (telecom keys intact)")
 
 
 def test_eval_command_is_well_formed() -> None:
@@ -175,8 +224,10 @@ def _main() -> int:
         test_missing_reward_is_skipped_not_invented,
         test_passed_flag_is_accepted_alongside_reward,
         test_guideline_block_is_stable_and_auditable,
-        test_empty_rules_render_a_baseline_not_an_empty_prompt,
+        test_empty_rules_render_the_untouched_baseline_block,
+        test_learned_rules_are_appended_not_substituted,
         test_write_guidelines_round_trips,
+        test_requested_keys_only_replace_the_domain_separator,
         test_eval_command_is_well_formed,
     ]
     failures = 0

@@ -1,0 +1,211 @@
+[
+  {
+    "task": "banking_knowledge_task_087",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 22,
+    "wall_time_s": 302.958459854126,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/089d9b85a9427081/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_097",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 42,
+    "wall_time_s": 149.03716278076172,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/047cd0ee1c4ca9db/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_029",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 50,
+    "wall_time_s": 122.44117474555969,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/da63ec1d52b1b72a/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "banking_knowledge_task_060",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 33,
+    "wall_time_s": 44.73347473144531,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/69f44af52a13a044/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_094",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 27,
+    "wall_time_s": 37.081093311309814,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/164a8317cb0f1ccd/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_052",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 31,
+    "wall_time_s": 45.712480783462524,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/93868782554fabed/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_025",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 33,
+    "wall_time_s": 178.6767933368683,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/989d2a624a7361b0/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_033",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 25,
+    "wall_time_s": 189.0204610824585,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/f99a3e459344907c/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "banking_knowledge_task_046",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 50,
+    "wall_time_s": 86.07990789413452,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/bc4231b9e5cbc1fc/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "banking_knowledge_task_073",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 39,
+    "wall_time_s": 278.61007618904114,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/2cbcb866b99db3b3/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_090",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 30,
+    "wall_time_s": 134.04660630226135,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/ac4e9b92839342ea/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "banking_knowledge_task_064",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 29,
+    "wall_time_s": 347.580913066864,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/75b352dda2f12a3d/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_007",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 26,
+    "wall_time_s": 368.6998255252838,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/9580c8d26c1ba038/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_023",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 43,
+    "wall_time_s": 218.8494324684143,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/3a92e949af849908/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 0,
+    "capability_limit_errors": 0
+  },
+  {
+    "task": "banking_knowledge_task_061",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 35,
+    "wall_time_s": 90.82810187339783,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/267336c5bf347671/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_069",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 25,
+    "wall_time_s": 167.9686062335968,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/cf463842f8db198c/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_034",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 23,
+    "wall_time_s": 268.934045791626,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/1fefa2e2987a6f8d/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_039",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 29,
+    "wall_time_s": 263.0352551937103,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/21aedf1b1b6b20dd/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  },
+  {
+    "task": "banking_knowledge_task_084",
+    "reward": 0.0,
+    "passed": false,
+    "turns": 35,
+    "wall_time_s": 366.07560992240906,
+    "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/mmh/evaluations/final-test-banking_knowledge-e86d2e4471f0/attempts/study_8d69fa96_26a2282d319a40/7a8998eaadad17be/traces",
+    "candidate": "study_8d69fa96_26a2282d319a40",
+    "model_errors": 1,
+    "capability_limit_errors": 1
+  }
+]

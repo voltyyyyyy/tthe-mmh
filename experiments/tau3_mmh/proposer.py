@@ -192,7 +192,7 @@ You are shown failures from recent tasks. Propose AT MOST ONE new guideline, as 
 {
   "thinking": "<why this failure recurs>",
   "operation": "Add",
-  "target_rule_id": "<new>",
+  "target_rule_id": "new",
   "new_rule": {
     "phi": "<the condition under which the guideline applies, a general situation - NEVER a task id>",
     "psi": "<the instruction the agent should follow>",
@@ -205,10 +205,27 @@ You are shown failures from recent tasks. Propose AT MOST ONE new guideline, as 
 }
 
 Hard requirements:
+- For Add, target_rule_id MUST be exactly the string "new".
 - phi must describe a GENERAL condition, never reference a specific task id, customer, or domain name.
 - psi must be actionable in one sentence.
 - If the failures share no common cause, reply {"operation": "None"} and nothing else.
 - Reply with JSON only."""
+
+
+def _normalize_add_target(payload: Any) -> Any:
+    """Coerce ADD target IDs to the validator's literal ``"new"`` sentinel.
+
+    Models often treat the prompt placeholder as a request to invent an identifier
+    (``new_rule_1``, ``rule_04``).  The target is semantically irrelevant for an
+    ADD patch: the validator only uses it to reject non-new operations.  Keep the
+    normalization local so the shared meta-memory validator stays strict.
+    """
+    if not isinstance(payload, Mapping):
+        return payload
+    normalized = dict(payload)
+    if str(normalized.get("operation", "")).strip().lower() == "add":
+        normalized["target_rule_id"] = "new"
+    return normalized
 
 
 class LLMProposer:
@@ -237,6 +254,7 @@ class LLMProposer:
         self.temperature = temperature
         self.disable_thinking = disable_thinking
         self.max_failures_shown = max_failures_shown
+        self.last_rejections: list[dict[str, Any]] = []
         self._client = OpenAI(
             base_url=base_url or os.environ.get("MMH_PROPOSER_BASE_URL", "http://127.0.0.1:8100/v1"),
             api_key=api_key or os.environ.get("MMH_PROPOSER_API_KEY", "EMPTY"),
@@ -246,6 +264,7 @@ class LLMProposer:
 
     def propose(self, *, round_id: int, failures: Sequence[FailureSignature],
                 memory: Any) -> list[Proposal]:
+        self.last_rejections = []
         if not failures:
             return []
         prompt = self._build_prompt(round_id, failures, memory)
@@ -257,7 +276,7 @@ class LLMProposer:
         )
         # Hard problems otherwise burn the whole budget reasoning before emitting JSON.
         if self.disable_thinking:
-            kwargs["chat_template_kwargs"] = {"enable_thinking": False}
+            kwargs["extra_body"] = {"chat_template_kwargs": {"enable_thinking": False}}
         else:
             kwargs["temperature"] = self.temperature
         response = self._client.chat.completions.create(**kwargs)
@@ -268,7 +287,7 @@ class LLMProposer:
                       memory: Any) -> str:
         lines = [f"Round {round_id} failures:"]
         for f in list(failures)[: self.max_failures_shown]:
-            detail = json.dumps(dict(f.evidence), sort_keys=True)[:400]
+            detail = json.dumps(dict(f.evidence), sort_keys=True)[:12000]
             lines.append(f"- [{f.domain}] signature={f.signature} evidence={detail}")
         block = memory.prompt_block()
         if block:
@@ -277,29 +296,39 @@ class LLMProposer:
             lines.append(block)
         return "\n".join(lines)
 
+    def _record_rejection(self, reason: str, text: str, **extra: Any) -> None:
+        if not hasattr(self, "last_rejections"):
+            self.last_rejections = []
+        self.last_rejections.append({"reason": reason, "raw": text[:1000], **extra})
+
     def _to_proposals(self, text: str, round_id: int,
                       failures: Sequence[FailureSignature]) -> list[Proposal]:
-        try:
-            payload = json.loads(text.strip()) if text.strip().startswith("{") else None
-        except json.JSONDecodeError:
-            payload = None
-        if payload is None:
-            # Fall back to the packaged fenced/embedded-JSON extraction.
+        text_stripped = text.strip()
+        payload = None
+        if text_stripped.startswith("{"):
             try:
-                patch = parse_patch_response(text, patch_id=f"llm-{round_id}", context="")
-            except ResponseValidationError:
-                return []
+                payload = json.loads(text_stripped)
+            except json.JSONDecodeError:
+                payload = None
+        if payload is None:
+            candidate = text
         else:
             if str(payload.get("operation", "")).lower() in {"none", ""}:
+                self._record_rejection("model_none", text)
                 return []
-            try:
-                patch = parse_patch_response(payload, patch_id=f"llm-{round_id}", context="")
-            except ResponseValidationError:
-                return []
+            candidate = payload
+        try:
+            patch = parse_patch_response(_normalize_add_target(candidate),
+                                         patch_id=f"llm-{round_id}", context="")
+        except ResponseValidationError as exc:
+            self._record_rejection("validation_error", text, detail=str(exc))
+            return []
         if patch.operation is not PatchOperation.ADD or not patch.result_rules:
             # Only ADD is auto-staged from a proposal. DELETE/REFINE/SPLIT/MERGE touch
             # existing rules and need the conflict machinery, so they are not applied
             # blind from a single round's proposal.
+            self._record_rejection("unsupported_operation", text,
+                                   detail=str(patch.operation))
             return []
         rule: Rule = patch.result_rules[0]
         return [

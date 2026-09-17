@@ -1,0 +1,135 @@
+{
+  "round": 14,
+  "domain": "telecom",
+  "records": [
+    {
+      "task": "telecom_[service_issue]lock_sim_card_pin|overdue_bill_suspension[PERSONA:Easy]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 47.02576494216919,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r14-c627106077da/attempts/study_8d69fa96_95685be4a80e44/e449dc15a1306570/traces",
+      "candidate": "study_8d69fa96_95685be4a80e44",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]airplane_mode_on|user_abroad_roaming_enabled_off[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 50.63286542892456,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r14-c627106077da/attempts/study_8d69fa96_95685be4a80e44/9e1a09b3593a1ec0/traces",
+      "candidate": "study_8d69fa96_95685be4a80e44",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_both_permissions|unseat_sim_card|user_abroad_roaming_enabled_off[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 51.80233907699585,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r14-c627106077da/attempts/study_8d69fa96_95685be4a80e44/1018734f524a9045/traces",
+      "candidate": "study_8d69fa96_95685be4a80e44",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 44.8839225769043,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r14-c627106077da/attempts/study_8d69fa96_95685be4a80e44/3ad3865fc0e43f3a/traces",
+      "candidate": "study_8d69fa96_95685be4a80e44",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]bad_vpn|data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 24.453832626342773,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r14-c627106077da/attempts/study_8d69fa96_95685be4a80e44/3278e8698b6b62fa/traces",
+      "candidate": "study_8d69fa96_95685be4a80e44",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[service_issue]airplane_mode_on|break_apn_settings|contract_end_suspension|lock_sim_card_pin[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 47.26514196395874,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r14-c627106077da/attempts/study_8d69fa96_95685be4a80e44/c2bc743edb764523/traces",
+      "candidate": "study_8d69fa96_95685be4a80e44",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]break_app_both_permissions|data_usage_exceeded[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 33.169203996658325,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r14-c627106077da/attempts/study_8d69fa96_95685be4a80e44/62889f7ee0ff20b0/traces",
+      "candidate": "study_8d69fa96_95685be4a80e44",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]airplane_mode_on|bad_network_preference[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 39.9195773601532,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r14-c627106077da/attempts/study_8d69fa96_95685be4a80e44/1965e27069878e5f/traces",
+      "candidate": "study_8d69fa96_95685be4a80e44",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_app_sms_permission|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_off[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 26.92805504798889,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r14-c627106077da/attempts/study_8d69fa96_95685be4a80e44/638364d9b33fd6e5/traces",
+      "candidate": "study_8d69fa96_95685be4a80e44",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[service_issue]contract_end_suspension|unseat_sim_card[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 42.47058653831482,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r14-c627106077da/attempts/study_8d69fa96_95685be4a80e44/9c39164e5459239f/traces",
+      "candidate": "study_8d69fa96_95685be4a80e44",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[service_issue]airplane_mode_on|unseat_sim_card[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 31.840261459350586,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r14-c627106077da/attempts/study_8d69fa96_95685be4a80e44/6269f1fe67ce949c/traces",
+      "candidate": "study_8d69fa96_95685be4a80e44",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    }
+  ],
+  "injected": [],
+  "gates": [],
+  "counts": {
+    "stable": 0,
+    "volatile": 0,
+    "active": 0,
+    "pending": 0
+  }
+}

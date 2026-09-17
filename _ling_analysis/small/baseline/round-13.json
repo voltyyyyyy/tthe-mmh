@@ -1,0 +1,135 @@
+{
+  "round": 13,
+  "domain": "telecom",
+  "records": [
+    {
+      "task": "telecom_[service_issue]break_apn_settings|contract_end_suspension|lock_sim_card_pin|unseat_sim_card[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 25.22170352935791,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r13-ca9138c391b4/attempts/study_8d69fa96_e123fda605bd4b/5dc5682f73a30810/traces",
+      "candidate": "study_8d69fa96_e123fda605bd4b",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]bad_network_preference|bad_vpn|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 41.90015482902527,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r13-ca9138c391b4/attempts/study_8d69fa96_e123fda605bd4b/6f9190277716a0d3/traces",
+      "candidate": "study_8d69fa96_e123fda605bd4b",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]break_app_storage_permission|data_usage_exceeded[PERSONA:Easy]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 36.49493479728699,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r13-ca9138c391b4/attempts/study_8d69fa96_e123fda605bd4b/bae0ba7c9643e206/traces",
+      "candidate": "study_8d69fa96_e123fda605bd4b",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]data_saver_mode_on|user_abroad_roaming_enabled_off[PERSONA:Easy]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 40.61904168128967,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r13-ca9138c391b4/attempts/study_8d69fa96_e123fda605bd4b/01f52f3ae7c77736/traces",
+      "candidate": "study_8d69fa96_e123fda605bd4b",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]airplane_mode_on|bad_network_preference|break_app_both_permissions|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_on[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 43.523210287094116,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r13-ca9138c391b4/attempts/study_8d69fa96_e123fda605bd4b/7aa0e04563e5cc27/traces",
+      "candidate": "study_8d69fa96_e123fda605bd4b",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]bad_network_preference|break_app_sms_permission|data_mode_off|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 34.7470269203186,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r13-ca9138c391b4/attempts/study_8d69fa96_e123fda605bd4b/f7eda4d82959531e/traces",
+      "candidate": "study_8d69fa96_e123fda605bd4b",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]airplane_mode_on|bad_network_preference|data_mode_off|data_usage_exceeded|user_abroad_roaming_disabled_on[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 44.139662742614746,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r13-ca9138c391b4/attempts/study_8d69fa96_e123fda605bd4b/8d3919651c03ceef/traces",
+      "candidate": "study_8d69fa96_e123fda605bd4b",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_app_storage_permission|unseat_sim_card[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 26.53810453414917,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r13-ca9138c391b4/attempts/study_8d69fa96_e123fda605bd4b/41e6ac962c72d405/traces",
+      "candidate": "study_8d69fa96_e123fda605bd4b",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]bad_wifi_calling|break_apn_mms_setting|data_mode_off|data_usage_exceeded|unseat_sim_card[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 43.945584774017334,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r13-ca9138c391b4/attempts/study_8d69fa96_e123fda605bd4b/712f11cd7e9e682a/traces",
+      "candidate": "study_8d69fa96_e123fda605bd4b",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]bad_wifi_calling|break_apn_mms_setting|unseat_sim_card|user_abroad_roaming_enabled_off[PERSONA:Easy]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 42.55851650238037,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r13-ca9138c391b4/attempts/study_8d69fa96_e123fda605bd4b/41385c96edff78e8/traces",
+      "candidate": "study_8d69fa96_e123fda605bd4b",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[service_issue]airplane_mode_on|overdue_bill_suspension[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 47.235185384750366,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r13-ca9138c391b4/attempts/study_8d69fa96_e123fda605bd4b/cc48142941b3f79b/traces",
+      "candidate": "study_8d69fa96_e123fda605bd4b",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    }
+  ],
+  "injected": [],
+  "gates": [],
+  "counts": {
+    "stable": 0,
+    "volatile": 0,
+    "active": 0,
+    "pending": 0
+  }
+}

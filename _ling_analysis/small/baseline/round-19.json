@@ -1,0 +1,113 @@
+{
+  "round": 19,
+  "domain": "banking_knowledge",
+  "records": [
+    {
+      "task": "banking_knowledge_task_040",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 29,
+      "wall_time_s": 301.2179057598114,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r19-1b05c1a446a8/attempts/study_8d69fa96_61ce8afe65bb4e/9d22e266976ea2b0/traces",
+      "candidate": "study_8d69fa96_61ce8afe65bb4e",
+      "model_errors": 1,
+      "capability_limit_errors": 1
+    },
+    {
+      "task": "banking_knowledge_task_095",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 44,
+      "wall_time_s": 256.3622512817383,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r19-1b05c1a446a8/attempts/study_8d69fa96_61ce8afe65bb4e/2c0e8209ef4ee8a6/traces",
+      "candidate": "study_8d69fa96_61ce8afe65bb4e",
+      "model_errors": 1,
+      "capability_limit_errors": 1
+    },
+    {
+      "task": "banking_knowledge_task_047",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 28,
+      "wall_time_s": 342.5644700527191,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r19-1b05c1a446a8/attempts/study_8d69fa96_61ce8afe65bb4e/79696d1c37f8cb72/traces",
+      "candidate": "study_8d69fa96_61ce8afe65bb4e",
+      "model_errors": 1,
+      "capability_limit_errors": 1
+    },
+    {
+      "task": "banking_knowledge_task_051",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 41,
+      "wall_time_s": 64.82156872749329,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r19-1b05c1a446a8/attempts/study_8d69fa96_61ce8afe65bb4e/b9f6fc50062dce85/traces",
+      "candidate": "study_8d69fa96_61ce8afe65bb4e",
+      "model_errors": 1,
+      "capability_limit_errors": 1
+    },
+    {
+      "task": "banking_knowledge_task_081",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 30,
+      "wall_time_s": 347.96551966667175,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r19-1b05c1a446a8/attempts/study_8d69fa96_61ce8afe65bb4e/4a07ae15dbba7f19/traces",
+      "candidate": "study_8d69fa96_61ce8afe65bb4e",
+      "model_errors": 1,
+      "capability_limit_errors": 1
+    },
+    {
+      "task": "banking_knowledge_task_088",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 172.34325242042542,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r19-1b05c1a446a8/attempts/study_8d69fa96_61ce8afe65bb4e/84fa016a9e8d0a87/traces",
+      "candidate": "study_8d69fa96_61ce8afe65bb4e",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "banking_knowledge_task_066",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 32,
+      "wall_time_s": 389.21772623062134,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r19-1b05c1a446a8/attempts/study_8d69fa96_61ce8afe65bb4e/5257e72259bdf548/traces",
+      "candidate": "study_8d69fa96_61ce8afe65bb4e",
+      "model_errors": 1,
+      "capability_limit_errors": 1
+    },
+    {
+      "task": "banking_knowledge_task_075",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 28,
+      "wall_time_s": 426.23872351646423,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r19-1b05c1a446a8/attempts/study_8d69fa96_61ce8afe65bb4e/528204a99f8daf18/traces",
+      "candidate": "study_8d69fa96_61ce8afe65bb4e",
+      "model_errors": 1,
+      "capability_limit_errors": 1
+    },
+    {
+      "task": "banking_knowledge_task_008",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 31,
+      "wall_time_s": 143.88017225265503,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r19-1b05c1a446a8/attempts/study_8d69fa96_61ce8afe65bb4e/4271f7fa08a2f8ca/traces",
+      "candidate": "study_8d69fa96_61ce8afe65bb4e",
+      "model_errors": 1,
+      "capability_limit_errors": 1
+    }
+  ],
+  "injected": [],
+  "gates": [],
+  "counts": {
+    "stable": 0,
+    "volatile": 0,
+    "active": 0,
+    "pending": 0
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "round": 3,
+  "domain": "airline",
+  "records": [
+    {
+      "task": "airline_12",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 28.700750827789307,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r3-c51dffdc2271/attempts/study_8d69fa96_7c586b54d3734f/7088320c8a7759a6/traces",
+      "candidate": "study_8d69fa96_7c586b54d3734f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_9",
+      "reward": 1.0,
+      "passed": true,
+      "turns": 50,
+      "wall_time_s": 118.1161003112793,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r3-c51dffdc2271/attempts/study_8d69fa96_7c586b54d3734f/af0fa66d4d2109c1/traces",
+      "candidate": "study_8d69fa96_7c586b54d3734f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_17",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 51.86638832092285,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r3-c51dffdc2271/attempts/study_8d69fa96_7c586b54d3734f/8d31e46e1a13c7b3/traces",
+      "candidate": "study_8d69fa96_7c586b54d3734f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_44",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 40.154223918914795,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r3-c51dffdc2271/attempts/study_8d69fa96_7c586b54d3734f/2f9bf6d23aee5519/traces",
+      "candidate": "study_8d69fa96_7c586b54d3734f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "airline_4",
+      "reward": 1.0,
+      "passed": true,
+      "turns": 50,
+      "wall_time_s": 23.795632362365723,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r3-c51dffdc2271/attempts/study_8d69fa96_7c586b54d3734f/973e98c43791ee70/traces",
+      "candidate": "study_8d69fa96_7c586b54d3734f",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    }
+  ],
+  "injected": [],
+  "gates": [],
+  "counts": {
+    "stable": 0,
+    "volatile": 0,
+    "active": 0,
+    "pending": 0
+  }
+}

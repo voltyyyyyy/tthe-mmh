@@ -1,0 +1,135 @@
+{
+  "round": 16,
+  "domain": "telecom",
+  "records": [
+    {
+      "task": "telecom_[service_issue]airplane_mode_on|break_apn_settings|lock_sim_card_pin[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 30.415015697479248,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r16-880a35178d8d/attempts/study_8d69fa96_f1f9d0ad28b44c/5d6e1ded12a406c8/traces",
+      "candidate": "study_8d69fa96_f1f9d0ad28b44c",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_sms_permission|data_mode_off|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_on[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 31.4798424243927,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r16-880a35178d8d/attempts/study_8d69fa96_f1f9d0ad28b44c/a304dd41a4a41e14/traces",
+      "candidate": "study_8d69fa96_f1f9d0ad28b44c",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]airplane_mode_on|bad_network_preference|user_abroad_roaming_enabled_off[PERSONA:Easy]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 48.50891590118408,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r16-880a35178d8d/attempts/study_8d69fa96_f1f9d0ad28b44c/8bceff177905f932/traces",
+      "candidate": "study_8d69fa96_f1f9d0ad28b44c",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]airplane_mode_on|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 44.07742381095886,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r16-880a35178d8d/attempts/study_8d69fa96_f1f9d0ad28b44c/3ceae2211cb1a7ba/traces",
+      "candidate": "study_8d69fa96_f1f9d0ad28b44c",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]data_mode_off|data_usage_exceeded[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 31.418585777282715,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r16-880a35178d8d/attempts/study_8d69fa96_f1f9d0ad28b44c/384e55106e7e2456/traces",
+      "candidate": "study_8d69fa96_f1f9d0ad28b44c",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_enabled_off[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 54.92272877693176,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r16-880a35178d8d/attempts/study_8d69fa96_f1f9d0ad28b44c/ac6323c73cfcd46f/traces",
+      "candidate": "study_8d69fa96_f1f9d0ad28b44c",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]airplane_mode_on|bad_network_preference|bad_vpn|data_mode_off|data_saver_mode_on|data_usage_exceeded|user_abroad_roaming_disabled_off[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 39.56017208099365,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r16-880a35178d8d/attempts/study_8d69fa96_f1f9d0ad28b44c/b34f582386ba0511/traces",
+      "candidate": "study_8d69fa96_f1f9d0ad28b44c",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mobile_data_issue]airplane_mode_on|data_saver_mode_on|user_abroad_roaming_disabled_on[PERSONA:None]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 34.036009550094604,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r16-880a35178d8d/attempts/study_8d69fa96_f1f9d0ad28b44c/dff8ce91d4df7a74/traces",
+      "candidate": "study_8d69fa96_f1f9d0ad28b44c",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]airplane_mode_on|bad_network_preference|bad_wifi_calling|break_apn_mms_setting|break_app_storage_permission|data_usage_exceeded|unseat_sim_card|user_abroad_roaming_disabled_off[PERSONA:Easy]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 37.03906726837158,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r16-880a35178d8d/attempts/study_8d69fa96_f1f9d0ad28b44c/06b09d85d41eb0ab/traces",
+      "candidate": "study_8d69fa96_f1f9d0ad28b44c",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[service_issue]airplane_mode_on|break_apn_settings|lock_sim_card_pin|overdue_bill_suspension[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 49.607019662857056,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r16-880a35178d8d/attempts/study_8d69fa96_f1f9d0ad28b44c/c6f0e107dfbde3f2/traces",
+      "candidate": "study_8d69fa96_f1f9d0ad28b44c",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    },
+    {
+      "task": "telecom_[mms_issue]break_app_both_permissions|unseat_sim_card|user_abroad_roaming_disabled_on[PERSONA:Hard]",
+      "reward": 0.0,
+      "passed": false,
+      "turns": 50,
+      "wall_time_s": 43.5427405834198,
+      "trace_dir": "/home/yangfan/mmh-exp/full375-20260916-v2/ling/baseline/evaluations/search-r16-880a35178d8d/attempts/study_8d69fa96_f1f9d0ad28b44c/a74d566d127a4c3c/traces",
+      "candidate": "study_8d69fa96_f1f9d0ad28b44c",
+      "model_errors": 0,
+      "capability_limit_errors": 0
+    }
+  ],
+  "injected": [],
+  "gates": [],
+  "counts": {
+    "stable": 0,
+    "volatile": 0,
+    "active": 0,
+    "pending": 0
+  }
+}

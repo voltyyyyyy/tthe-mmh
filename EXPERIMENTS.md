@@ -1,5 +1,83 @@
 # MMH on tau3 — experiment handoff
 
+## Active full-study handoff — 2026-09-16 08:37 Asia/Shanghai
+
+The user authorized all 375 tasks on **both Qwen and Ling**, with MMH, flat, and
+frozen-baseline arms. Remote tmux supervisors are running; laptop shutdown is safe.
+At this checkpoint both are performing four-domain search-only preflight. Each
+automatically starts its full study when preflight finishes without infrastructure
+errors. A scored model/harness failure does not fail preflight.
+
+The user explicitly requested a `gpt-5.6-terra` subagent to manage the runs.
+`/root/terra_manager` is assigned that role and confirmed the live remote supervisors.
+The durable manager after laptop shutdown is the remote tmux supervisor, not the
+chat subagent. Ling's banking preflight hit HTTP 400 and is under diagnosis; inspect
+the exact captured response before deciding whether it is infrastructure or a
+native context/model/harness limitation. Do not count an arbitrary HTTP 400 as a
+transport failure merely because later requests return 200.
+
+Confirmed response for that Ling attempt: native window 131072, requested output
+8192, input at least 122881 (total at least 131073). This is a context-budget
+capability/harness outcome, not a transport outage. Terra is assigned a narrowly
+evidenced classification fix and regression test before full-study launch; preserve
+the original attempt and do not silently truncate the task or exceed native context.
+
+- Host: `yangfan@10.96.43.165`; tmux session `mmh-run`.
+- Windows: `qwen-study`, `ling-study`, `study-monitor`, `qwen-capture`,
+  `ling-capture`, `server27b`, `ling128k` (legacy `proxy` remains).
+- Root: `/home/yangfan/mmh-exp/full375-20260916`.
+- Run code: `/home/yangfan/meta-agent-test/all375-qwen38-20260901/repo/experiments_tau3_mmh_study`.
+- Entry points: `full_study.py`, `supervise_study.py`, `monitor_study.py`,
+  `analyze_study.py`. The older `round_driver.py` remains pilot-only.
+- Launch scripts: `operations/qwen-study.sh`, `operations/ling-study.sh`.
+- Read `monitor.json`, each model's `status.json`, and
+  `operations/{qwen,ling}-supervisor.json`. Logs are in `operations/`.
+- Qwen capture: port 8102 → 8000. Ling capture: port 8103 routes Ling requests to
+  8001 and simulator/grader requests to Qwen 8000. All traffic stays on the lab.
+- Ling now serves its supported 131072 context limit, using its existing isolated
+  vLLM 0.29.0 environment. Qwen's existing vLLM environment was not upgraded.
+- Official Qwen3-Embedding-0.6B snapshot `97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3`
+  runs through sentence-transformers on CPU. Actual load/inference verified:
+  1024 dimensions, paraphrase cosine 0.74849 versus unrelated 0.27879.
+- One-task retail smoke completed for both models. Ling's scored failure used no
+  customer tools; separate required/automatic tool probes both parsed correctly.
+  Do not relabel that behavioral failure as infrastructure.
+
+Protocol: six rounds per domain, all 225 search tasks once per arm, three disjoint
+validation groups/domain, then frozen-memory coverage of all 75 validation and 75
+test tasks. Final test is never shown to proposer or used during adaptation. One
+proposal/round and at most two paired candidate probes/round. Positive paired reward
+difference validates; negative difference rejects; ties are indecisive. Both learned
+arms retain initial validation; flat has one validated pool with no promotion gate.
+Prompt cap is eight rules: MMH stable-first, flat newest-first. This compares those
+memory policies, not an isolated gate with identical prompt ranking.
+
+Infrastructure attempts and raw traces are preserved. Only failed infrastructure
+tasks are retried (three attempts/evaluation; bounded supervisor restarts). A persistent
+fault stops with `needs_attention`; the supervisor does not repair arbitrary bugs.
+Interrupted rounds restore their start snapshots and reuse verified evaluation receipts.
+Source/config hashes are frozen and resume refuses changed provenance.
+
+Fixes: SQLite same-file backup hang, missing embedding wiring, proposer SDK
+`extra_body`, dropped Ling reasoning alias, preservation of full baseline instructions,
+telecom task-ID colon normalization (from the other session), baseline promoted-list
+type. New runner fixes held-out task separation, repeated candidate evidence, paired
+validation, trait freezing, trace error inspection, and task/attempt isolation.
+Verification: 44 existing checks plus four new full-study regression tests pass.
+
+Research limits: one stream/trial per model; no pass^2/pass^3 estimate or replicated
+causal claim. Domain difficulty changes alone do not demonstrate conditional concept
+drift. The new runner logs stable-rule degradation but does not implement stable
+retirement. Gate-controlled trait prediction needs enough promotions; zero promotions
+is an identifiability limitation, not proof of tier equivalence. Results remain pending.
+
+Next session: inspect statuses before restarting anything. Do not edit deployed source
+during a run. After completion, inspect `analysis.json`/`REPORT.md`, audit coverage and
+infrastructure attempts, then archive, copy locally and verify checksums before any
+server teardown. Earlier handoff sections below describe the superseded pilots.
+
+---
+
 **Status:** infrastructure complete and verified; the MMH lifecycle has **not yet been observed
 firing on real data** (every attempt so far died on infrastructure before reaching the
 mechanism). Read §7 before trusting any run.

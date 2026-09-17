@@ -1,0 +1,99 @@
+{
+  "utc": "2026-09-17T00:18:06Z",
+  "disk_free_gb": 2690.8,
+  "models": {
+    "qwen": {
+      "status": {
+        "utc": "2026-09-16T23:39:07Z",
+        "state": "running",
+        "arm": "flat",
+        "evaluation": "search-r16",
+        "pending": 11,
+        "candidate": "study_5a9436ff_90734545437943",
+        "attempt": 1
+      },
+      "arms": {
+        "baseline": {
+          "rounds": 15,
+          "search_scored": 132,
+          "search_passed": 45,
+          "validation_scored": 0,
+          "validation_passed": 0,
+          "test_scored": 0,
+          "test_passed": 0
+        },
+        "mmh": {
+          "rounds": 16,
+          "search_scored": 143,
+          "search_passed": 58,
+          "validation_scored": 0,
+          "validation_passed": 0,
+          "test_scored": 0,
+          "test_passed": 0
+        },
+        "flat": {
+          "rounds": 15,
+          "search_scored": 132,
+          "search_passed": 52,
+          "validation_scored": 0,
+          "validation_passed": 0,
+          "test_scored": 0,
+          "test_passed": 0
+        }
+      },
+      "server": [
+        "vllm:num_requests_running{engine=\"0\",model_name=\"Qwen/Qwen3.8-27B\"} 2.0",
+        "vllm:num_requests_waiting{engine=\"0\",model_name=\"Qwen/Qwen3.8-27B\"} 0.0",
+        "vllm:kv_cache_usage_perc{engine=\"0\",model_name=\"Qwen/Qwen3.8-27B\"} 0.029717682020802383"
+      ],
+      "healthy": true,
+      "capture_bytes": 456461220,
+      "infrastructure_attempts": 0
+    },
+    "ling": {
+      "status": {
+        "utc": "2026-09-16T22:03:15Z",
+        "state": "complete",
+        "unique_tasks_per_arm": 375
+      },
+      "arms": {
+        "baseline": {
+          "rounds": 24,
+          "search_scored": 225,
+          "search_passed": 22,
+          "validation_scored": 75,
+          "validation_passed": 6,
+          "test_scored": 75,
+          "test_passed": 9
+        },
+        "mmh": {
+          "rounds": 24,
+          "search_scored": 225,
+          "search_passed": 21,
+          "validation_scored": 75,
+          "validation_passed": 7,
+          "test_scored": 75,
+          "test_passed": 10
+        },
+        "flat": {
+          "rounds": 24,
+          "search_scored": 225,
+          "search_passed": 24,
+          "validation_scored": 75,
+          "validation_passed": 6,
+          "test_scored": 75,
+          "test_passed": 8
+        }
+      },
+      "server": [
+        "vllm:num_requests_running{engine=\"0\",model_name=\"inclusionAI/Ling-3.0-tiny\"} 0.0",
+        "vllm:num_requests_waiting{engine=\"0\",model_name=\"inclusionAI/Ling-3.0-tiny\"} 0.0",
+        "vllm:kv_cache_usage_perc{engine=\"0\",model_name=\"inclusionAI/Ling-3.0-tiny\"} 0.0"
+      ],
+      "healthy": true,
+      "capture_bytes": 6572194400,
+      "infrastructure_attempts": 0
+    }
+  },
+  "gpu": "0, GPU-2ff261cc-c605-0c02-1689-8446384ccb55, 100 %, 89965 MiB, 7324 MiB\n1, GPU-845b4e7a-d0e5-23f1-9b6b-25d204b538f3, 0 %, 88217 MiB, 9072 MiB\n2, GPU-57356dd8-2119-0d45-6df6-1b84673c5610, 0 %, 18 MiB, 97271 MiB"
+}

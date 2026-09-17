@@ -1,0 +1,70 @@
+    PID    PPID                  STARTED COMMAND
+ 298654  298536 Wed Sep 16 08:07:21 2026 sshd: yangfan@pts/8
+ 298655  298654 Wed Sep 16 08:07:21 2026 -bash
+ 299138  363607 Wed Sep 16 08:08:14 2026 bash -c CUDA_VISIBLE_DEVICES=0 /home/yangfan/meta-agent-test/.venv/bin/vllm serve /dataset1/yangfan/.cache/huggingface/hub/models--Qwen--Qwen3.8-27B/snapshots/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0     --served-model-name Qwen/Qwen3.8-27B gpt-4.1-2025-04-14 claude-opus-4-5     --host 127.0.0.1 --port 8000 --dtype bfloat16 --max-model-len 262144     --max-num-seqs 32 --kv-cache-dtype fp8 --gpu-memory-utilization 0.9     --enable-auto-tool-choice --tool-call-parser qwen3_coder     --reasoning-parser qwen3 --language-model-only 2>&1 | tee /home/yangfan/meta-agent-test/mmh-volatile-lab/logs/run27b.log
+ 299141  299138 Wed Sep 16 08:08:14 2026 /home/yangfan/meta-agent-test/.venv/bin/python /home/yangfan/meta-agent-test/.venv/bin/vllm serve /dataset1/yangfan/.cache/huggingface/hub/models--Qwen--Qwen3.8-27B/snapshots/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0 --served-model-name Qwen/Qwen3.8-27B gpt-4.1-2025-04-14 claude-opus-4-5 --host 127.0.0.1 --port 8000 --dtype bfloat16 --max-model-len 262144 --max-num-seqs 32 --kv-cache-dtype fp8 --gpu-memory-utilization 0.9 --enable-auto-tool-choice --tool-call-parser qwen3_coder --reasoning-parser qwen3 --language-model-only
+ 299142  299138 Wed Sep 16 08:08:14 2026 tee /home/yangfan/meta-agent-test/mmh-volatile-lab/logs/run27b.log
+ 300105  299141 Wed Sep 16 08:08:38 2026 /home/yangfan/meta-agent-test/.venv/bin/python -c from multiprocessing.resource_tracker import main;main(57)
+ 300109  299141 Wed Sep 16 08:08:38 2026 VLLM::EngineCore
+ 314205  363607 Wed Sep 16 08:28:46 2026 bash -c bash /home/yangfan/mmh-exp/full375-20260916/operations/ling-128k.sh > /home/yangfan/mmh-exp/full375-20260916/operations/ling-server.log 2>&1
+ 314208  314205 Wed Sep 16 08:28:46 2026 /dataset1/yangfan/venvs/ling-vllm/bin/python3 /dataset1/yangfan/venvs/ling-vllm/bin/vllm serve /dataset1/yangfan/.cache/huggingface/hub/models--inclusionAI--Ling-3.0-tiny/snapshots/e3a47d5b986e7141b6efd62597d598ebb392060d --served-model-name inclusionAI/Ling-3.0-tiny --host 127.0.0.1 --port 8001 --trust-remote-code --dtype bfloat16 --tensor-parallel-size 1 --max-model-len 131072 --max-num-seqs 16 --gpu-memory-utilization 0.85 --enable-prefix-caching --enable-auto-tool-choice --tool-call-parser ling3 --reasoning-parser ling3
+ 324179  314208 Wed Sep 16 08:28:56 2026 /dataset1/yangfan/venvs/ling-vllm/bin/python3 -c from multiprocessing.resource_tracker import main;main(49)
+ 324180  314208 Wed Sep 16 08:28:56 2026 VLLM::EngineCore
+ 358066       1 Fri Aug 21 09:02:59 2026 /usr/lib/systemd/systemd --user
+ 358069  358066 Fri Aug 21 09:02:59 2026 (sd-pam)
+ 358082  358066 Fri Aug 21 09:02:59 2026 /usr/bin/pipewire
+ 358085  358066 Fri Aug 21 09:02:59 2026 /usr/bin/pipewire -c filter-chain.conf
+ 358087  358066 Fri Aug 21 09:02:59 2026 /snap/snapd-desktop-integration/391/usr/bin/user-session-helper /snap/snapd-desktop-integration/391/usr/bin/snapd-desktop-integration
+ 358089  358066 Fri Aug 21 09:02:59 2026 /usr/bin/wireplumber
+ 358090  358066 Fri Aug 21 09:02:59 2026 /usr/bin/pipewire-pulse
+ 358111  358066 Fri Aug 21 09:02:59 2026 /usr/bin/dbus-daemon --session --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+ 358156  358066 Fri Aug 21 09:02:59 2026 /usr/libexec/xdg-document-portal
+ 358168  358066 Fri Aug 21 09:02:59 2026 /usr/libexec/xdg-permission-store
+ 363607       1 Fri Aug 21 09:21:02 2026 tmux new-session -d -s meta-agent-test -c /home/yangfan/meta-agent-test
+ 363608  363607 Fri Aug 21 09:21:02 2026 -bash
+ 363616  363607 Fri Aug 21 09:21:02 2026 bash
+ 363633  363616 Fri Aug 21 09:21:02 2026 tee -a logs/setup.log
+ 372889  363607 Fri Aug 21 09:51:44 2026 bash
+ 372909  372889 Fri Aug 21 09:51:44 2026 tee -a logs/server.log
+ 373015  363607 Fri Aug 21 09:51:56 2026 bash
+ 374888  363607 Wed Sep 16 09:13:54 2026 bash -c bash /home/yangfan/mmh-exp/full375-20260916-v2/operations/qwen-proxy-v2.sh > /home/yangfan/mmh-exp/full375-20260916-v2/operations/qwen-proxy-v2.log 2>&1
+ 374891  374888 Wed Sep 16 09:13:54 2026 /home/yangfan/meta-agent-test/.venv/bin/python /home/yangfan/meta-agent-test/all375-qwen38-20260901/repo-ctxbudget-v2/experiments_tau3_mmh_study/capture_proxy.py
+ 374893  363607 Wed Sep 16 09:13:54 2026 bash -c bash /home/yangfan/mmh-exp/full375-20260916-v2/operations/ling-proxy-v2.sh > /home/yangfan/mmh-exp/full375-20260916-v2/operations/ling-proxy-v2.log 2>&1
+ 374894  374893 Wed Sep 16 09:13:54 2026 /home/yangfan/meta-agent-test/.venv/bin/python /home/yangfan/meta-agent-test/all375-qwen38-20260901/repo-ctxbudget-v2/experiments_tau3_mmh_study/capture_proxy.py
+ 374897  363607 Wed Sep 16 09:13:54 2026 bash -c bash /home/yangfan/mmh-exp/full375-20260916-v2/operations/monitor-v2.sh > /home/yangfan/mmh-exp/full375-20260916-v2/operations/monitor-v2.log 2>&1
+ 374899  374897 Wed Sep 16 09:13:54 2026 /home/yangfan/meta-agent-test/.venv/bin/python -u -m experiments_tau3_mmh_study.monitor_study --root /home/yangfan/mmh-exp/full375-20260916-v2
+ 374948  373015 Fri Aug 21 09:54:08 2026 nvidia-smi dmon -s pucvmet -d 5 -o DT
+ 375162  363607 Wed Sep 16 09:14:22 2026 bash -c bash /home/yangfan/mmh-exp/full375-20260916-v2/operations/qwen-study-v2.sh > /home/yangfan/mmh-exp/full375-20260916-v2/operations/qwen-supervisor-v2.log 2>&1
+ 375165  375162 Wed Sep 16 09:14:22 2026 /home/yangfan/meta-agent-test/.venv/bin/python -u -m experiments_tau3_mmh_study.supervise_study --repo /home/yangfan/meta-agent-test/all375-qwen38-20260901/repo-ctxbudget-v2 --root /home/yangfan/mmh-exp/full375-20260916-v2 --label qwen
+ 375167  363607 Wed Sep 16 09:14:22 2026 bash -c bash /home/yangfan/mmh-exp/full375-20260916-v2/operations/ling-study-v2.sh > /home/yangfan/mmh-exp/full375-20260916-v2/operations/ling-supervisor-v2.log 2>&1
+ 375168  375167 Wed Sep 16 09:14:22 2026 /home/yangfan/meta-agent-test/.venv/bin/python -u -m experiments_tau3_mmh_study.supervise_study --repo /home/yangfan/meta-agent-test/all375-qwen38-20260901/repo-ctxbudget-v2 --root /home/yangfan/mmh-exp/full375-20260916-v2 --label ling
+ 375171  375165 Wed Sep 16 09:14:22 2026 /home/yangfan/meta-agent-test/.venv/bin/python -u -m experiments_tau3_mmh_study.full_study --repo /home/yangfan/meta-agent-test/all375-qwen38-20260901/repo-ctxbudget-v2 --out /home/yangfan/mmh-exp/full375-20260916-v2/qwen-preflight --model Qwen/Qwen3.8-27B --base-url http://127.0.0.1:8102/v1 --concurrency 2 --smoke
+ 375685  375171 Wed Sep 16 09:14:42 2026 /home/yangfan/meta-agent-test/.venv/bin/python -m meta_agent eval --benchmark /home/yangfan/meta-agent-test/all375-qwen38-20260901/repo-ctxbudget-v2/reproduction/qwen_tau3/all375/benchmark.yaml:search --config /home/yangfan/meta-agent-test/all375-qwen38-20260901/repo-ctxbudget-v2/experiments_tau3_mmh_study/tau3_harness --name study_4fc61e0c_5b98e663fac447 --model Qwen/Qwen3.8-27B --concurrency 2 --tasks airline:22,retail:43,telecom:[service_issue]break_apn_settings|contract_end_suspension|lock_sim_card_pin|unseat_sim_card[PERSONA:Hard],banking_knowledge:task_040 --keep-failed
+ 377244  375168 Wed Sep 16 09:16:37 2026 /home/yangfan/meta-agent-test/.venv/bin/python -u -m experiments_tau3_mmh_study.full_study --repo /home/yangfan/meta-agent-test/all375-qwen38-20260901/repo-ctxbudget-v2 --out /home/yangfan/mmh-exp/full375-20260916-v2/ling --model inclusionAI/Ling-3.0-tiny --base-url http://127.0.0.1:8103/v1 --concurrency 2
+ 377336  377244 Wed Sep 16 09:16:41 2026 ps -u yangfan -o pid,ppid,lstart,args
+ 380982  363607 Fri Aug 21 10:01:58 2026 bash
+ 387396  363607 Fri Aug 21 10:16:45 2026 -bash
+ 418383  363607 Fri Aug 21 11:59:37 2026 -bash
+1118484  363607 Tue Sep  1 09:45:31 2026 bash -c bash -lc 'cd /home/yangfan/meta-agent-test/all375-qwen38-20260901/repo; exec /home/yangfan/meta-agent-test/.venv/bin/python reproduction/qwen_tau3/dual_loop/capture_proxy.py --listen-port 8112 --upstream http://127.0.0.1:8012 --log /home/yangfan/meta-agent-test/all375-qwen38-20260901/observability/proxy_baseline_8112.jsonl' 2>&1 | tee -a /home/yangfan/meta-agent-test/all375-qwen38-20260901/logs/proxy_baseline.log
+1118486 1118484 Tue Sep  1 09:45:31 2026 /home/yangfan/meta-agent-test/.venv/bin/python reproduction/qwen_tau3/dual_loop/capture_proxy.py --listen-port 8112 --upstream http://127.0.0.1:8012 --log /home/yangfan/meta-agent-test/all375-qwen38-20260901/observability/proxy_baseline_8112.jsonl
+1118487 1118484 Tue Sep  1 09:45:31 2026 tee -a /home/yangfan/meta-agent-test/all375-qwen38-20260901/logs/proxy_baseline.log
+1118493  363607 Tue Sep  1 09:45:31 2026 nvidia-smi --query-gpu=index,timestamp,utilization.gpu,memory.used,power.draw,temperature.gpu --format=csv -l 10
+1118501  363607 Tue Sep  1 09:45:31 2026 -bash
+1425029  363607 Tue Sep  1 23:11:43 2026 bash -c bash -lc 'cd /home/yangfan/meta-agent-test/all375-qwen38-20260901/repo; exec /home/yangfan/meta-agent-test/.venv/bin/python reproduction/qwen_tau3/dual_loop/capture_proxy.py --listen-port 8114 --upstream http://127.0.0.1:8012 --log /home/yangfan/meta-agent-test/all375-qwen38-20260901/observability/proxy_human_reference_8114.jsonl' 2>&1 | tee -a /home/yangfan/meta-agent-test/all375-qwen38-20260901/logs/proxy_human_reference.log
+1425032 1425029 Tue Sep  1 23:11:43 2026 /home/yangfan/meta-agent-test/.venv/bin/python reproduction/qwen_tau3/dual_loop/capture_proxy.py --listen-port 8114 --upstream http://127.0.0.1:8012 --log /home/yangfan/meta-agent-test/all375-qwen38-20260901/observability/proxy_human_reference_8114.jsonl
+1425033 1425029 Tue Sep  1 23:11:43 2026 tee -a /home/yangfan/meta-agent-test/all375-qwen38-20260901/logs/proxy_human_reference.log
+1479905  363607 Sun Aug 23 10:23:13 2026 bash -c ./start-mysql.sh 2>&1 | tee logs/mysql.log
+1479908 1479905 Sun Aug 23 10:23:13 2026 /home/yangfan/meta-agent-test/metamem-ab/mysqld-root/usr/sbin/mysqld --basedir=/home/yangfan/meta-agent-test/metamem-ab/mysqld-root/usr --datadir=/home/yangfan/meta-agent-test/metamem-ab/mysql-data --port=13306 --bind-address=127.0.0.1 --socket=/home/yangfan/meta-agent-test/metamem-ab/mysql-tmp/mysql.sock --pid-file=/home/yangfan/meta-agent-test/metamem-ab/mysql-tmp/mysqld.pid --tmpdir=/home/yangfan/meta-agent-test/metamem-ab/mysql-tmp --secure-file-priv=/home/yangfan/meta-agent-test/metamem-ab/mysql-tmp/files
+1479909 1479905 Sun Aug 23 10:23:13 2026 tee logs/mysql.log
+1524143  363607 Tue Sep  1 23:42:37 2026 bash -c bash -lc 'cd /home/yangfan/meta-agent-test/all375-qwen38-20260901/repo; exec /home/yangfan/meta-agent-test/.venv/bin/python reproduction/qwen_tau3/all375/round_robin_capture_proxy.py --listen-port 8111 --upstream http://127.0.0.1:8011 --upstream http://127.0.0.1:8012 --upstream http://127.0.0.1:8013 --log /home/yangfan/meta-agent-test/all375-qwen38-20260901/observability/proxy_meta_8111.jsonl' 2>&1 | tee -a /home/yangfan/meta-agent-test/all375-qwen38-20260901/logs/proxy_meta3.log
+1524144 1524143 Tue Sep  1 23:42:37 2026 /home/yangfan/meta-agent-test/.venv/bin/python reproduction/qwen_tau3/all375/round_robin_capture_proxy.py --listen-port 8111 --upstream http://127.0.0.1:8011 --upstream http://127.0.0.1:8012 --upstream http://127.0.0.1:8013 --log /home/yangfan/meta-agent-test/all375-qwen38-20260901/observability/proxy_meta_8111.jsonl
+1524145 1524143 Tue Sep  1 23:42:37 2026 tee -a /home/yangfan/meta-agent-test/all375-qwen38-20260901/logs/proxy_meta3.log
+1583994  363607 Sun Aug 23 16:06:14 2026 bash -c /home/yangfan/meta-agent-test/metamem-ab/start-mysql-ma.sh 2>&1 | tee /home/yangfan/meta-agent-test/metamem-ab/logs/mysql_ma.log
+1583997 1583994 Sun Aug 23 16:06:14 2026 /home/yangfan/meta-agent-test/metamem-ab/mysqld-root/usr/sbin/mysqld --basedir=/home/yangfan/meta-agent-test/metamem-ab/mysqld-root/usr --datadir=/home/yangfan/meta-agent-test/metamem-ab/mysql-ma-data --port=13307 --bind-address=127.0.0.1 --socket=/home/yangfan/meta-agent-test/metamem-ab/mysql-ma-tmp/mysql.sock --pid-file=/home/yangfan/meta-agent-test/metamem-ab/mysql-ma-tmp/mysqld.pid --tmpdir=/home/yangfan/meta-agent-test/metamem-ab/mysql-ma-tmp --secure-file-priv=/home/yangfan/meta-agent-test/metamem-ab/mysql-ma-tmp/files
+1583998 1583994 Sun Aug 23 16:06:14 2026 tee /home/yangfan/meta-agent-test/metamem-ab/logs/mysql_ma.log
+1587636  363607 Sun Aug 23 16:13:12 2026 bash -c /home/yangfan/meta-agent-test/metamem-ab/start-mysql-ma-on.sh 2>&1 | tee /home/yangfan/meta-agent-test/metamem-ab/logs/mysql_ma_on.log
+1587639 1587636 Sun Aug 23 16:13:12 2026 /home/yangfan/meta-agent-test/metamem-ab/mysqld-root/usr/sbin/mysqld --basedir=/home/yangfan/meta-agent-test/metamem-ab/mysqld-root/usr --datadir=/home/yangfan/meta-agent-test/metamem-ab/mysql-ma-on-data --port=13308 --bind-address=127.0.0.1 --socket=/home/yangfan/meta-agent-test/metamem-ab/mysql-ma-on-tmp/mysql.sock --pid-file=/home/yangfan/meta-agent-test/metamem-ab/mysql-ma-on-tmp/mysqld.pid --tmpdir=/home/yangfan/meta-agent-test/metamem-ab/mysql-ma-on-tmp --secure-file-priv=/home/yangfan/meta-agent-test/metamem-ab/mysql-ma-on-tmp/files
+1587640 1587636 Sun Aug 23 16:13:12 2026 tee /home/yangfan/meta-agent-test/metamem-ab/logs/mysql_ma_on.log
+4086629  363607 Tue Sep 15 23:11:08 2026 bash -c PROXY_LOG=/home/yangfan/mmh-exp/run_api.jsonl PROXY_PORT=8100 PROXY_UPSTREAM=http://127.0.0.1:8000 /home/yangfan/meta-agent-test/.venv/bin/python /home/yangfan/meta-agent-test/mmh-volatile-lab/capture_proxy.py 2>&1 | tee /home/yangfan/meta-agent-test/mmh-volatile-lab/logs/run_proxy.log
+4086632 4086629 Tue Sep 15 23:11:08 2026 /home/yangfan/meta-agent-test/.venv/bin/python /home/yangfan/meta-agent-test/mmh-volatile-lab/capture_proxy.py
+4086633 4086629 Tue Sep 15 23:11:08 2026 tee /home/yangfan/meta-agent-test/mmh-volatile-lab/logs/run_proxy.log

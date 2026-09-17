@@ -1,0 +1,24 @@
+[
+  {
+    "guideline": {
+      "guideline_id": "g-3-llm",
+      "phi": "A task that has a 'signature' of official_task_failure and results in an empty conversation after 50 turns, indicating a stuck or infinite loop.",
+      "psi": "The agent must detect this pattern and reset the task or seek clarification.",
+      "omega": "pending",
+      "initial_confidence": 0.9,
+      "provenance": {
+        "proposer": "llm",
+        "round": 3
+      }
+    },
+    "hypothesis": "model-identified common cause across recent failures",
+    "expected_benefit": "recurrence of the identified pattern should stop failing",
+    "risks": "model may over-generalize from few examples",
+    "source_tasks": [
+      "airline_12",
+      "airline_17",
+      "airline_44"
+    ],
+    "judge_confidence": 0.9
+  }
+]
