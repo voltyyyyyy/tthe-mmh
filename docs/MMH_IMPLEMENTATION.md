@@ -155,3 +155,44 @@ The output is deterministic JSON. It includes an accepted patch, recurrence on
 distinct subsets, promotion to stable memory, a harmful patch rollback, and a
 subsequent distribution-shift failure signal. No model credentials, datasets,
 or network access are required.
+
+## Separate LCB online-MMH experiment (2026-09-17)
+
+`experiments/lcb_mmh_online/` is an explicitly separate implementation of the
+TTHE online policy in `docs/MMH_TTHE_HANDOFF.md`.  It preserves the legacy
+standalone demo and the existing `--memory-mode none` behavior.
+
+Key differences from the legacy LiveCodeBench adapter:
+
+- `improvement` and `regression` are decisive; equal scores, zero/mismatched
+  tests, inapplicability, and infrastructure faults are neutral.
+- A pending application resolves only after configured decisive observations
+  across distinct later tasks and later batches.  One regression never resolves
+  as harmful.
+- Memory validation is capped by a finite total-budget denominator; the default
+  memory share is 10% and is a hard allocation, not a target.
+- Applications and parent/child artifacts are immutable and content-addressed.
+- Failed interventions are returned to the proposer in a bounded memory package
+  with public evidence references.
+- Applying an existing rule can create an application without forcing a new
+  ADD/REFINE rule patch.
+
+The package is offline-testable and credential-free.  Run:
+
+```bash
+python -m experiments.lcb_mmh_online.tests.test_online_mmh
+python -m experiments.lcb_mmh_online --arm mmh --total-budget 1000000
+```
+
+No live model benchmark was run for this experiment, and no accuracy
+improvement is claimed.
+
+## TTHE benchmark suite
+
+`experiments/tthe_benchmarks/` records the two requested TTHE studies: a
+single-domain hard-slice comparison and a mixed domain-blocked stream over BIRD,
+LiveCodeBench, SWE-bench Verified, and DS-1000.  The hard-slice manifests are in
+the repository; their underlying datasets are not.  The package validates slice
+counts, plans streams and commands for the `none` and `mmh` arms only, and
+provides paired McNemar reporting helpers.  LiveCodeBench is currently the only
+domain with an implemented online-MMH adapter.

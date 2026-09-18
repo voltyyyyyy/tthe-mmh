@@ -43,3 +43,6 @@ venv/
 !/config.example.yaml
 *.png
 */slices/_*.json
+
+# --- local raw run artifacts (large; use external storage or LFS) ---
+artifacts/

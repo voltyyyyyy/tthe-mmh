@@ -62,6 +62,44 @@ PYTHONPATH=. python -m livecodebench.lcb_optimize --pilot <pilot.json> \
   --memory-mode mmh --batch-size 5 --group 2 --max-rounds 3
 ```
 
+## Separate LiveCodeBench online-MMH experiment
+
+`experiments/lcb_mmh_online/` implements the online evidence/lifecycle policy from
+`docs/MMH_TTHE_HANDOFF.md` as a separate, credential-free experiment.  It adds
+immutable application/artifact identities, neutral tie handling, failed-
+intervention retrieval, a process-safe budget ledger, replay caching, and flat
+versus online arms.  It does not change the legacy `--memory-mode none` path or
+the standalone demo semantics.
+
+```bash
+PYTHONPATH=. python -m experiments.lcb_mmh_online.tests.test_online_mmh
+PYTHONPATH=. python -m experiments.lcb_mmh_online --arm mmh --total-budget 1000000
+```
+
+See `experiments/lcb_mmh_online/README.md` for architecture, defaults, and the
+three reproducible offline arm configurations.  A live-loop shim is available
+via `python -m experiments.lcb_mmh_online.live_runner`, but no paid live benchmark
+is launched by these commands.
+
+## TTHE benchmark suite (`none` vs `mmh`)
+
+`experiments/tthe_benchmarks/` defines the two requested benchmark studies: the
+single-domain hard-slice comparison and the mixed domain-blocked stream over
+BIRD, LiveCodeBench, SWE-bench Verified, and DS-1000.  The hard-slice manifests
+are already in the repository; the underlying datasets must be pulled from their
+public sources (LCB/DS-1000/SWE via HuggingFace, BIRD Mini-Dev via a local root).
+
+```bash
+PYTHONPATH=. python -m experiments.tthe_benchmarks validate-slices
+PYTHONPATH=. python -m experiments.tthe_benchmarks commands-single \
+  --domain livecodebench --total-budget 2000000 --run-name hard60
+PYTHONPATH=. python -m experiments.tthe_benchmarks plan-mixed \
+  --batch-size 5 --repeats 3 --output benchmark_data/mixed_all.json
+```
+
+See `experiments/tthe_benchmarks/README.md` for dataset preparation and current
+integration limitations.
+
 ## Install
 
 ```bash

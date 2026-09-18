@@ -1,0 +1,13 @@
+{
+  "arm": "flat",
+  "run_name": "lcb_online_flat",
+  "run_dir": "runs/lcb_online_flat",
+  "stream_seed": 0,
+  "total_budget": 1000000,
+  "memory_budget_fraction": 0.1,
+  "retrieval_limit": 5,
+  "model": "deepseek-v4-flash",
+  "seed_harness": "bare",
+  "batch_size": 5,
+  "max_rounds": 3
+}

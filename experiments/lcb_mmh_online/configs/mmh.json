@@ -1,0 +1,29 @@
+{
+  "arm": "mmh",
+  "run_name": "lcb_online_mmh",
+  "run_dir": "runs/lcb_online_mmh",
+  "stream_seed": 0,
+  "total_budget": 1000000,
+  "memory_budget_fraction": 0.1,
+  "retrieval_limit": 5,
+  "model": "deepseek-v4-flash",
+  "seed_harness": "bare",
+  "batch_size": 5,
+  "max_rounds": 3,
+  "online_policy": {
+    "alpha": 1.0,
+    "beta": 1.0,
+    "decision_min_decisive": 3,
+    "decision_distinct_tasks": 3,
+    "decision_distinct_batches": 2,
+    "support_confidence": 0.75,
+    "harmful_confidence": 0.4,
+    "promotion_confidence": 0.8,
+    "promotion_success_batches": 3,
+    "promotion_age_batches": 3,
+    "retrieval_similarity": 0.55,
+    "positive_lessons_limit": 5,
+    "failed_interventions_limit": 3,
+    "prompt_char_budget": 6000
+  }
+}

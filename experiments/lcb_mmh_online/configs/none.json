@@ -1,0 +1,11 @@
+{
+  "arm": "none",
+  "run_name": "lcb_online_none",
+  "run_dir": "runs/lcb_online_none",
+  "stream_seed": 0,
+  "total_budget": null,
+  "model": "deepseek-v4-flash",
+  "seed_harness": "bare",
+  "batch_size": 5,
+  "max_rounds": 3
+}

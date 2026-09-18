@@ -110,7 +110,10 @@ def propose_batch(tk):
             "`memory_patch` (object with `operation` ADD|DELETE|REFINE|SPLIT|MERGE, `target_rule_ids` list, "
             "`result_rules` list, `judge_confidence`, `rationale`, and optional general `context`). ADD has an empty target list; all other "
             "operations name existing target rule IDs. DELETE has no result rules; ADD/REFINE/MERGE have one; "
-            "SPLIT has at least two. Every result rule has `phi`, `psi`, `omega`, and numeric `confidence`). The card "
+            "SPLIT has at least two. Every result rule has `phi`, `psi`, `omega`, and numeric `confidence`). "
+            "The online experiment also accepts optional extended fields: `origin_task_ids` (the exact task "
+            "IDs whose traces motivated the intervention, not an assumed batch[0]), `trace_refs`, "
+            "`expected_effect`, `prerequisites`, and `failure_signature`. The card "
             "must describe only public traces and self-generated checks. Never include hidden/private/gold data "
             "or scores. Do not make compound changes: they cannot be independently validated.\n"
         )

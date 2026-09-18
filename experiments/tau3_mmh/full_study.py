@@ -28,6 +28,7 @@ from .traits import compute_traits, ex_ante_surprise
 
 DOMAINS = ('airline', 'retail', 'telecom', 'banking_knowledge')
 ARMS = ('baseline', 'mmh', 'flat')
+CANDIDATE_EVALS_PER_ROUND = 2
 TRANSPORT = ('ReadTimeout', 'ConnectTimeout', 'ConnectError', 'APIConnectionError',
              'NotFoundError', 'InternalServerError', 'ServiceUnavailable',
              'CUDA out of memory', 'RemoteProtocolError', 'LocalProtocolError',
@@ -58,6 +59,28 @@ def task_key(task):
 
 def partition(items, n):
     return [list(items[i * len(items) // n:(i + 1) * len(items) // n]) for i in range(n)]
+
+
+def candidate_rules(memory, round_id, max_maturing=CANDIDATE_EVALS_PER_ROUND):
+    """Choose validation candidates without starving older rules.
+
+    Pending patches must each be resolved.  Validated volatile rules then get up
+    to ``max_maturing`` additional probes, oldest evidence first.  The previous
+    ``candidates[:2]`` policy let each newly staged rule consume one slot forever,
+    so older rules never accumulated ``successful_lifespan``.
+    """
+    rules = memory.store.list_rules()
+    pending = [r for r in rules
+               if r.status is PatchStatus.PENDING and (r.created_round or 0) < round_id]
+    maturing = [r for r in rules
+                if r.status is not PatchStatus.PENDING
+                and r.tier is RuleTier.VOLATILE
+                and (r.created_round or 0) < round_id]
+    pending.sort(key=lambda r: (r.provenance.get('last_measured', r.created_round or 0),
+                                r.created_round or 0, r.rule_id))
+    maturing.sort(key=lambda r: (r.provenance.get('last_measured', r.created_round or 0),
+                                 r.created_round or 0, r.rule_id))
+    return pending + maturing[:max_maturing]
 
 
 def make_schedule(splits):
@@ -101,6 +124,8 @@ def inspect_record(record, trace_dir):
 
 
 class Study:
+    candidate_evals_per_round = CANDIDATE_EVALS_PER_ROUND
+
     def __init__(self, repo, out, concurrency=2, model='Qwen/Qwen3.8-27B',
                  base_url='http://127.0.0.1:8100/v1'):
         self.repo, self.out = Path(repo).resolve(), Path(out).resolve()
@@ -135,6 +160,7 @@ class Study:
             self.memories[arm] = GuidelineMemory(store=SQLiteStore(folder / 'memory.sqlite'),
                                                embedding_provider=self.embedding, config=MMHConfig())
         self.proposer = LLMProposer(base_url=self.url, model=self.model, max_failures_shown=2)
+        self.candidate_evals_per_round = CANDIDATE_EVALS_PER_ROUND
         self.freeze_manifest()
 
     def freeze_manifest(self):
@@ -146,7 +172,8 @@ class Study:
         manifest = {'protocol': 'all375-paired-v1', 'model': self.model, 'endpoint': self.url,
                     'sources': sources, 'embedding': asdict(self.embedding.config),
                     'embedding_probe': self.embedding_probe, 'schedule': self.schedule,
-                    'arms': ARMS, 'max_prompt_rules': 8, 'candidate_evals_per_round': 2,
+                    'arms': ARMS, 'max_prompt_rules': 8, 'candidate_evals_per_round': self.candidate_evals_per_round,
+                    'candidate_selection': 'all pending + oldest maturing up to candidate_evals_per_round',
                     'mmh_config': asdict(MMHConfig()), 'concurrency': self.concurrency,
                     'validation_decision': 'paired reward sum improvement; ties indecisive',
                     'flat_definition': 'initial paired validation retained; validated rules one pool; no promotion gate',
@@ -284,10 +311,11 @@ class Study:
         memory = self.memories[arm]
         round_id = spec['round']
         audit = self.out / arm / 'audit.jsonl'
-        # Oldest evidence first, round-robin by last measurement prevents starvation.
-        candidates = [r for r in memory.store.list_rules() if (r.created_round or 0) < round_id]
-        candidates.sort(key=lambda r: (r.provenance.get('last_measured', 0), r.created_round or 0, r.rule_id))
-        for candidate in candidates[:2]:
+        # Resolve every pending patch, then give the oldest validated volatile
+        # rules additional probes up to candidate_evals_per_round.  This prevents
+        # new proposals from starving existing rules of promotion evidence.
+        candidates = candidate_rules(memory, round_id, self.candidate_evals_per_round)
+        for candidate in candidates:
             active = self.active(arm)
             without = [r for r in active if r.rule_id != candidate.rule_id][:7]
             with_rule = without + [candidate]
